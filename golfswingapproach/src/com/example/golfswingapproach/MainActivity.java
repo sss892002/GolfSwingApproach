@@ -26,8 +26,9 @@ public class MainActivity extends Activity {
 	
 	this.registerReceiver(mReceiver,filter);
 	filter=new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-	this.registerReceiver(mReceiver, filter);
+	this.registerReceiver(mReceiver,filter);
 	}
+	
 	private final BroadcastReceiver mReceiver= new BroadcastReceiver() {
 	@Override
 	public void onReceive(Context context, Intent intent){
@@ -41,6 +42,7 @@ public class MainActivity extends Activity {
 		}
 		
 	}
+	
 	else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 	setProgressBarIndeterminateVisibility(false);
 	setTitle(R.string.select_device);
@@ -49,24 +51,15 @@ public class MainActivity extends Activity {
 		mNewDevicesArrayAdapter.add(noDevices);
 		
 	}
-	}
-	}
+	
 
+	}
 	
 	mBTAdapter.cancelDiscovery ();
 	BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
 	private static final UUID MY_UUID = UUID.fromString("00001108-0000-1000-8000-00805F9B34FB");
 	mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
 	mmSocket.connect();
-	};	
+	}	
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
 	}
-
-	
-}
-
