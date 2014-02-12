@@ -301,6 +301,7 @@ public class MainActivity extends Activity {
 					if( buffer[0] == 36)
 						Log.d("BT1",message);	
 					
+					
 //					for (int i =  0 ; i < bytes ; i++)
 //					{
 //						//out.append(" "+ buffer[i]);
