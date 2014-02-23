@@ -1,6 +1,8 @@
 package com.zikto.golfswingapproach;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.app.Activity;
 import android.content.Intent;
 import java.io.IOException;
@@ -36,7 +38,6 @@ public class MainActivity extends Activity {
 	private BluetoothSocket btSocket = null;
 	private OutputStream outStream = null;
 	private InputStream inStream = null;
-	private BluetoothThread btThread;
 
 	// Well known SPP UUID
 	private static final UUID MY_UUID =
@@ -56,27 +57,17 @@ public class MainActivity extends Activity {
 		out.append("\n...In onCreate()...");
 
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
-		//Create a reciever for the Intent
 
-		//IntentFilter will match the action specified
-		//IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-		//broadcast reciever for any matching filter
-		//this.registerReceiver(mReciever, filter);
-
-		//filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-		//this.registerReceiver(mReciever, filter);
-
-		//ListView foundDevicesListView = (ListView) findViewById(R.id.new_devices);
-		//foundDevicesListView.setAdapter(mNewDevicesArrayAdapter);
 
 		CheckBTState();
 		
 		
-		out.append("\n...In onResume...\n...Attempting client connect...");
-
-		//TODO : need to search and choose
-		//btAdapter.startDiscovery();
-
+		out.append("\n\n\nAttempting client connect...");		
+		
+	}
+	
+	public boolean AttemptConnect()
+	{
 		// Set up a pointer to the remote node using it's address.
 		BluetoothDevice device = btAdapter.getRemoteDevice(address);
 
@@ -95,96 +86,57 @@ public class MainActivity extends Activity {
 		btAdapter.cancelDiscovery();
 
 		// Establish the connection.  This will block until it connects.
+
+		out.invalidate();
+
 		try {
 			btSocket.connect();
 			out.append("\n...Connection established and data link opened..\n");
+			out.append("Start Reading...");
+//			btThread = new BluetoothThread(btSocket);
+//			btThread.start();
+			BluetoothReadThread(btSocket);
+			return true;
 		} catch (IOException e) {
-			try {
+			
+			out.append("\nConnection Failed!!!Reconnect in 3 seconds");
+			try
+			{
 				btSocket.close();
-			} catch (IOException e2) {
-				AlertBox("Fatal Error", "In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
+			}catch(IOException ioerror)
+			{
+				out.append(ioerror.getMessage());
 			}
+			
+			return false;//SystemClock.sleep(3000);
 		}
-
-		
-		//TODO : Read data packet
-		out.append("Start Reading...");
-		btThread = new BluetoothThread(btSocket);
-		btThread.start();
-
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
 		out.append("\n...In onStart()...");
+		for(int i = 0 ; i < 10 ; i ++)
+		{
+			if(!AttemptConnect())
+			{
+				out.append("\nReconnect in 3 seconds");
+				out.invalidate();
+				SystemClock.sleep(3000);
+			}
+			else
+			{
+				break;
+			}
+			
+		}
+		
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
-/*
-		out.append("\n...In onResume...\n...Attempting client connect...");
 
-		//TODO : need to search and choose
-		//btAdapter.startDiscovery();
-
-		// Set up a pointer to the remote node using it's address.
-		BluetoothDevice device = btAdapter.getRemoteDevice(address);
-
-		// Two things are needed to make a connection:
-		//   A MAC address, which we got above.
-		//   A Service ID or UUID.  In this case we are using the
-		//     UUID for SPP.
-		try {
-			btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-		} catch (IOException e) {
-			AlertBox("Fatal Error", "In onResume() and socket create failed: " + e.getMessage() + ".");
-		}
-
-		// Discovery is resource intensive.  Make sure it isn't going on
-		// when you attempt to connect and pass your message.
-		btAdapter.cancelDiscovery();
-
-		// Establish the connection.  This will block until it connects.
-		try {
-			btSocket.connect();
-			out.append("\n...Connection established and data link opened..\n");
-		} catch (IOException e) {
-			try {
-				btSocket.close();
-			} catch (IOException e2) {
-				AlertBox("Fatal Error", "In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
-			}
-		}
-
-		
-		//TODO : Read data packet
-		
-		btThread = new BluetoothThread(btSocket);
-		btThread.start();
-		// Create a data stream so we can talk to server.
-		//		out.append("\n...Sending message to server...");
-		//
-		//		try {
-		//			outStream = btSocket.getOutputStream();
-		//		} catch (IOException e) {
-		//			AlertBox("Fatal Error", "In onResume() and output stream creation failed:" + e.getMessage() + ".");
-		//		}
-		//
-		//		String message = "Hello from Android.\n";
-		//		byte[] msgBuffer = message.getBytes();
-		//		try {
-		//			outStream.write(msgBuffer);
-		//		} catch (IOException e) {
-		//			String msg = "In onResume() and an exception occurred during write: " + e.getMessage();
-		//			if (address.equals("00:00:00:00:00:00")) 
-		//				msg = msg + ".\n\nUpdate your server address from 00:00:00:00:00:00 to the correct address on line 37 in the java code";
-		//			msg = msg +  ".\n\nCheck that the SPP UUID: " + MY_UUID.toString() + " exists on server.\n\n";
-		//
-		//			AlertBox("Fatal Error", msg);       
-		//		}
-		 * */
 		 
 	}
 
@@ -271,55 +223,74 @@ public class MainActivity extends Activity {
 
 		}
 	};
-	public class BluetoothThread extends Thread{
-		private final BluetoothSocket socket;
-		private InputStream inStream;
-		public BluetoothThread(BluetoothSocket socket)
-		{
-			this.socket = socket;
-			try{
-				inStream = socket.getInputStream();
-			} catch(IOException e)
-			{
-				Log.e("TAG", "socket created failed",e);
-			}
-
-		}
-
-		public void run()
-		{
-			int bytes;
-			byte[] buffer = new byte[30];
-
-			while(true)
-			{
-				try
-				{
-					Log.d("ALIVE","Read");
-					bytes = inStream.read(buffer);
-					String message =  Arrays.toString(buffer);
-					//out.append("Data : ");
+	
+	private void BluetoothReadThread(BluetoothSocket btSocket)
+	{
+		final BluetoothSocket socket = btSocket;
+		final Handler handler = new Handler();
+		Runnable runnable = new Runnable(){
+			@Override
+			public void run() {
+				int bytes;
+				//TODO:Fix reading module.Looks like it's missing tons of data
+				byte[] buffer = new byte[30];
+				InputStream inStream;
+				try {
+					inStream = socket.getInputStream();
 					
-					if( buffer[0] == 36)
+					while(true)
 					{
-						Log.d("BT1",message);
-						PacketParser p = new PacketParser(buffer);
-						if(p.getAccelData()!=null)
-							Log.d("BT2",p.getAccelData().toString());
-					}
-//					for (int i =  0 ; i < bytes ; i++)
-//					{
-//						//out.append(" "+ buffer[i]);
-//						Log.d("BT1",buffer[i]);
-//					}
-					//out.append("\n");
-					
-				}catch(IOException e )
-				{
-					AlertBox("IO Exception",e.getMessage());
+						try
+						{
+							Log.d("ALIVE","Read");
+							bytes = inStream.read(buffer);
+							String message =  Arrays.toString(buffer);
+							//out.append("Data : ");
+							
+							if( buffer[0] == 36)
+							{
+								Log.d("BT1",message);
+								final PacketParser p = new PacketParser(buffer);
+								if(p.getAccelData()!=null)
+								{
+									Log.d("BT2",p.getAccelData().toString());
+									handler.post(new Runnable()
+									{
+
+										@Override
+										public void run() {
+											out.append(p.getAccelData().toString());
+										}
+										
+									});
+									//out.append(p.getAccelData().toString());
+								}
+							}
+//							for (int i =  0 ; i < bytes ; i++)
+//							{
+//								//out.append(" "+ buffer[i]);
+//								Log.d("BT1",buffer[i]);
+//							}
+							//out.append("\n");
+							
+						}catch(IOException e )
+						{
+							Log.d("Error",e.getMessage());
+						}
+						
+						
+					} 
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
-			} 
-		}
+				
+				
+			}
+			
+		};
+		
+		new Thread(runnable).start();
+		
 	}
 }
 
