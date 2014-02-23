@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import com.example.golfswingapproach.R;
+import com.zikto.invensense.utils.PacketParser;
 //import com.example.bttest.R;
 
 import android.bluetooth.BluetoothAdapter;
@@ -107,7 +108,7 @@ public class MainActivity extends Activity {
 
 		
 		//TODO : Read data packet
-		
+		out.append("Start Reading...");
 		btThread = new BluetoothThread(btSocket);
 		btThread.start();
 
@@ -294,14 +295,18 @@ public class MainActivity extends Activity {
 			{
 				try
 				{
+					Log.d("ALIVE","Read");
 					bytes = inStream.read(buffer);
 					String message =  Arrays.toString(buffer);
 					//out.append("Data : ");
 					
 					if( buffer[0] == 36)
-						Log.d("BT1",message);	
-					
-					
+					{
+						Log.d("BT1",message);
+						PacketParser p = new PacketParser(buffer);
+						if(p.getAccelData()!=null)
+							Log.d("BT2",p.getAccelData().toString());
+					}
 //					for (int i =  0 ; i < bytes ; i++)
 //					{
 //						//out.append(" "+ buffer[i]);
