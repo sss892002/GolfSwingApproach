@@ -259,7 +259,7 @@ public class MainActivity extends Activity {
 
 										@Override
 										public void run() {
-											out.append(p.getAccelData().toString());
+											out.append("Accel : " + p.getAccelData().toString()+"\n");
 										}
 										
 									});

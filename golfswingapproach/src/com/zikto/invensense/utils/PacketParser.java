@@ -118,4 +118,18 @@ public class PacketParser {
  	{
  		return AccelList;
  	} 	
+ 	
+ 	public float getAccelMag()
+ 	{
+ 		if(isData && (this.data.get(2) == 0))
+ 		{
+ 			double d1 = AccelList.get(0)*AccelList.get(0);
+ 	 		double d2 = AccelList.get(1)*AccelList.get(1);
+ 	 		double d3 = AccelList.get(2)*AccelList.get(2);
+
+ 			return (float) Math.sqrt(d1+d2+d3);
+ 		}
+ 		else
+ 			return -1f;
+ 	}
 }
