@@ -1,31 +1,38 @@
 package com.zikto.golfswingapproach;
 
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Intent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.hardware.SensorEvent;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.golfswingapproach.R;
 //import com.example.bttest.R;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.IntentFilter;
+
 
 
 public class MainActivity extends Activity {
@@ -36,6 +43,20 @@ public class MainActivity extends Activity {
 	private OutputStream outStream = null;
 	private InputStream inStream = null;
 	private BluetoothThread btThread;
+	private static final int HISTORY_SIZE = 500; 
+	
+	private float mLastX, mLastY, mLastZ;
+	private boolean mInitialized;
+	
+    private final float NOISE = (float) 2.0;
+    
+    private XYPlot plot;
+    
+    private SimpleXYSeries xSeries = null;
+    private SimpleXYSeries ySeries = null;
+    private SimpleXYSeries zSeries = null;
+    
+    private ArrayList<Float> walkList = new ArrayList<Float>();
 
 	// Well known SPP UUID
 	private static final UUID MY_UUID =
@@ -49,6 +70,57 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		xSeries = new SimpleXYSeries("x");
+        xSeries.useImplicitXVals();
+        ySeries = new SimpleXYSeries("y");
+        ySeries.useImplicitXVals();
+        zSeries = new SimpleXYSeries("z");
+        zSeries.useImplicitXVals();
+        
+        // initialize our XYPlot reference:
+        plot = (XYPlot) findViewById(R.id.mySimpleXYPlot);
+ 
+        // Create a couple arrays of y-values to plot:
+        Number[] series1Numbers = {1, 8, 5, 2, 7, 4};
+        Number[] series2Numbers = {4, 6, 3, 8, 2, 10};
+        
+        plot.setRangeBoundaries(0, 60, BoundaryMode.FIXED);
+        //plot.setRangeBoundaries(0, 10==-	fffwef0, BoundaryMode.FIXED);
+        
+        /*
+        // Turn the above arrays into XYSeries':
+        XYSeries series1 = new SimpleXYSeries(
+        		xSeries,          // SimpleXYSeries takes a List so turn our array into a List
+                SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, // Y_VALS_ONLY means use the element index as the x value
+                "Series1");                             // Set the display title of the series
+ 
+        // same as above
+        XYSeries series2 = new SimpleXYSeries(yList, SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series2");
+ 
+ */
+        // Create a formatter to use for drawing a series using LineAndPointRenderer
+        // and configure it from xml:
+        //LineAndPointFormatter series1Format = new LineAndPointFormatter();
+        //series1Format.setPointLabelFormatter(new PointLabelFormatter());
+        //series1Format.configure(getApplicationContext(), 
+         //       R.xml.line_point_formatter_with_plf1);
+ 
+        // add a new series' to the xyplot:
+        plot.addSeries(xSeries, new LineAndPointFormatter());
+ 
+        // same as above:
+        LineAndPointFormatter series2Format = new LineAndPointFormatter();
+        series2Format.setPointLabelFormatter(new PointLabelFormatter());
+        series2Format.configure(getApplicationContext(),
+                R.xml.line_point_formatter_with_plf2);
+        plot.setTicksPerRangeLabel(3);
+        plot.getGraphWidget().setDomainLabelOrientation(-45);
+   
+
+
+	
+
 
 		out = (TextView) findViewById(R.id.out);
 
@@ -119,6 +191,57 @@ public class MainActivity extends Activity {
 		out.append("\n...In onStart()...");
 	}
 	
+	
+	private boolean isStart = false;
+
+	public void onStartClick(View view)
+	{
+		//Toggle Click
+		final Button button = (Button)findViewById(R.id.buttonStart);
+		
+		if(isStart)
+		{
+			button.setText("Start");
+			String message = "";
+			for(float value  : walkList)
+			{
+				message=message+","+value;
+			}
+			
+			String state = Environment.getExternalStorageState();
+		    if (Environment.MEDIA_MOUNTED.equals(state)) {
+		       
+				try {
+					//
+			    	//This will get the SD Card directory and create a folder named MyFiles in it.
+			    	File sdCard = Environment.getExternalStorageDirectory();
+			    	File directory = new File (sdCard.getAbsolutePath() + "/zikto");
+			    	directory.mkdirs();
+
+			    	//Now create the file in the above directory and write the contents into it
+			    	File file = new File(directory, "walk.csv");
+			    	FileOutputStream fOut = new FileOutputStream(file);
+					OutputStreamWriter osw = new OutputStreamWriter(fOut);
+			    	osw.write(message);
+			    	osw.flush();
+			    	osw.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+		    	
+		    }
+			
+		}
+		else
+		{
+			button.setText("Stop");
+			walkList.clear();
+			
+		}
+		isStart = !isStart;
+	}
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -186,6 +309,71 @@ public class MainActivity extends Activity {
 		 * */
 		 
 	}
+	
+	
+
+	@Override
+	public void onSensorChanged(SensorEvent event)//should be changed...
+	{
+		TextView tvX= (TextView)findViewById(R.id.x_axis);
+		TextView tvY= (TextView)findViewById(R.id.y_axis);
+		TextView tvZ= (TextView)findViewById(R.id.z_axis);
+		ImageView iv = (ImageView)findViewById(R.id.image);
+		
+		float x = event.values[0];//should be changed later
+		float y = event.values[1];
+		float z = event.values[2];
+		
+		float mag = (float)Math.sqrt(x*x + y*y + z*z);
+		
+		walkList.add(mag);
+		
+		
+		
+		//xQueue.add(x);
+		//yQueue.add(y);
+		//zQueue.add(z);
+		
+		if(xSeries.size() > HISTORY_SIZE)
+		{
+			xSeries.removeFirst();
+			ySeries.removeFirst();
+			zSeries.removeFirst();
+		}
+
+		xSeries.addLast(null, mag);
+		ySeries.addLast(null, y);
+		zSeries.addLast(null, z);
+		
+		plot.redraw();
+		
+		
+		if (!mInitialized) {
+			mLastX = x;
+			mLastY = y;
+			mLastZ = z;
+			tvX.setText("0.0");
+			tvY.setText("0.0");
+			tvZ.setText("0.0");
+			mInitialized = true;
+		} else {
+			float deltaX = Math.abs(mLastX - x);
+			float deltaY = Math.abs(mLastY - y);
+			float deltaZ = Math.abs(mLastZ - z);
+			if (deltaX < NOISE) deltaX = (float)0.0;
+			if (deltaY < NOISE) deltaY = (float)0.0;
+			if (deltaZ < NOISE) deltaZ = (float)0.0;
+			mLastX = x;
+			mLastY = y;
+			mLastZ = z;
+			
+			}
+		}
+		
+		//print out messages
+
+
+    
 
 	@Override
 	public void onPause() {
@@ -270,6 +458,9 @@ public class MainActivity extends Activity {
 
 		}
 	};
+	
+
+
 	public class BluetoothThread extends Thread{
 		private final BluetoothSocket socket;
 		private InputStream inStream;
