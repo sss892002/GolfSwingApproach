@@ -39,7 +39,6 @@ import android.content.IntentFilter;
 public class MainActivity extends Activity {
 	TextView out;
     private XYPlot plot; ///Main Plot
-    private SimpleXYSeries magSeries = null; ///Acceleration Magnitude Serires
 	//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
 	/** Called when the activity is first created. */
 	@Override
