@@ -13,7 +13,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 public class AccelerometerManager implements SensorEventListener{
-	private static final int HISTORY_SIZE = 500; 
     private static final float NOISE = (float) 2.0;
     
 	private float mLastMag;
@@ -23,25 +22,19 @@ public class AccelerometerManager implements SensorEventListener{
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
 	private Activity activity;
-	
-	private XYPlot plot;
-    private SimpleXYSeries magSeries = null; ///Acceleration Magnitude Series
-    private ArrayList<Float> magList = new ArrayList<Float>();
+	private PlotManager plotManager;
 
 
-	public AccelerometerManager(Activity activity,XYPlot plot)
+	public AccelerometerManager(Activity activity,PlotManager plotManager)
 	{
 		this.activity = activity;
-		this.plot = plot;
+		this.plotManager = plotManager;
 		
 		mSensorManager = (SensorManager) this.activity.getSystemService(Context.SENSOR_SERVICE);
 		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 		//mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
-		
-		magSeries = new SimpleXYSeries("mag");
-		magSeries.useImplicitXVals();
 	}
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -56,17 +49,8 @@ public class AccelerometerManager implements SensorEventListener{
 
 		float mag = (float)Math.sqrt(x*x + y*y + z*z);
 
-		magList.add(mag);
-
-		if(magSeries.size() > HISTORY_SIZE)
-		{
-			magSeries.removeFirst();
-		}
-
-		magSeries.addLast(null, mag);
-
-		plot.redraw();
-
+		plotManager.addValue(mag);
+		
 		if (!mInitialized) {
 			mLastMag = mag;
 			//tvX.setText("0.0");

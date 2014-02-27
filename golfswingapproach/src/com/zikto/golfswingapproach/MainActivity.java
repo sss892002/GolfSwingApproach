@@ -38,7 +38,10 @@ import android.content.IntentFilter;
 
 public class MainActivity extends Activity {
 	TextView out;
-    private XYPlot plot; ///Main Plot
+	AccelerometerManager accelManager;
+	PlotManager plotManager;
+	
+	XYPlot plot;
 	//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
 	/** Called when the activity is first created. */
 	@Override
@@ -49,6 +52,8 @@ public class MainActivity extends Activity {
 		out = (TextView) findViewById(R.id.out);
 
 		out.append("\n...In onCreate()...");
+		
+		plotManager = new PlotManager(plot);
 		
 		//checkBTState();
 		
@@ -61,6 +66,7 @@ public class MainActivity extends Activity {
 			}
 			
 		});
+		
 	}
 	
 	public void checkBTState()
@@ -72,6 +78,22 @@ public class MainActivity extends Activity {
 			startActivityForResult(enableBtIntent, BluetoothModule.REQUEST_ENABLE_BT);
 		}
 	}
+	
+	public void startPhoneSensor()
+	{
+		//Accelerometer Manager
+		accelManager = new AccelerometerManager(this, plotManager);	
+	}
+	
+	public void startInvensenseSensor()
+	{
+		checkBTState();
+	}
+	
+	public void setAccel(float value)
+	{
+		
+	}
 
 	@Override
 	public void onStart() {
@@ -79,16 +101,16 @@ public class MainActivity extends Activity {
 		out.append("\n...In onStart()...");
 		for(int i = 0 ; i < 10 ; i ++)
 		{
-			if(!AttemptConnect())
-			{
-				out.append("\nReconnect in 3 seconds");
-				out.invalidate();
-				SystemClock.sleep(3000);
-			}
-			else
-			{
-				break;
-			}
+//			if(!AttemptConnect())
+//			{
+//				out.append("\nReconnect in 3 seconds");
+//				out.invalidate();
+//				SystemClock.sleep(3000);
+//			}
+//			else
+//			{
+//				break;
+//			}
 			
 		}
 		
