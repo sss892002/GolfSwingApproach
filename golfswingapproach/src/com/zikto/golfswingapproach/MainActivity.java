@@ -11,7 +11,10 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.UUID;
 
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
 import com.example.golfswingapproach.R;
+import com.zikto.invensense.BluetoothModule;
 import com.zikto.invensense.utils.PacketParser;
 //import com.example.bttest.R;
 
@@ -19,7 +22,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,18 +38,8 @@ import android.content.IntentFilter;
 
 public class MainActivity extends Activity {
 	TextView out;
-	private static final int REQUEST_ENABLE_BT = 1;
-	private BluetoothAdapter btAdapter = null;
-	private BluetoothSocket btSocket = null;
-	private OutputStream outStream = null;
-	private InputStream inStream = null;
-
-	// Well known SPP UUID
-	private static final UUID MY_UUID =
-			UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
-	// Insert your server's MAC address
-	private static String address = "00:A0:96:3B:E5:4D";
+    private XYPlot plot; ///Main Plot
+    private SimpleXYSeries magSeries = null; ///Acceleration Magnitude Serires
 	//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
 	/** Called when the activity is first created. */
 	@Override
@@ -55,60 +50,27 @@ public class MainActivity extends Activity {
 		out = (TextView) findViewById(R.id.out);
 
 		out.append("\n...In onCreate()...");
-
-		btAdapter = BluetoothAdapter.getDefaultAdapter();
-
-
-		CheckBTState();
 		
+		//checkBTState();
 		
-		out.append("\n\n\nAttempting client connect...");		
-		
-	}
-	
-	public boolean AttemptConnect()
-	{
-		// Set up a pointer to the remote node using it's address.
-		BluetoothDevice device = btAdapter.getRemoteDevice(address);
+		Button connectButton = (Button)findViewById(R.id.buttonConnect);
+		connectButton.setOnClickListener(new Button.OnClickListener(){
 
-		// Two things are needed to make a connection:
-		//   A MAC address, which we got above.
-		//   A Service ID or UUID.  In this case we are using the
-		//     UUID for SPP.
-		try {
-			btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-		} catch (IOException e) {
-			AlertBox("Fatal Error", "In onResume() and socket create failed: " + e.getMessage() + ".");
-		}
-
-		// Discovery is resource intensive.  Make sure it isn't going on
-		// when you attempt to connect and pass your message.
-		btAdapter.cancelDiscovery();
-
-		// Establish the connection.  This will block until it connects.
-
-		out.invalidate();
-
-		try {
-			btSocket.connect();
-			out.append("\n...Connection established and data link opened..\n");
-			out.append("Start Reading...");
-//			btThread = new BluetoothThread(btSocket);
-//			btThread.start();
-			BluetoothReadThread(btSocket);
-			return true;
-		} catch (IOException e) {
-			
-			out.append("\nConnection Failed!!!Reconnect in 3 seconds");
-			try
-			{
-				btSocket.close();
-			}catch(IOException ioerror)
-			{
-				out.append(ioerror.getMessage());
+			@Override
+			public void onClick(View v) {
+				//AttemptConnect();
 			}
 			
-			return false;//SystemClock.sleep(3000);
+		});
+	}
+	
+	public void checkBTState()
+	{
+		if(!BluetoothModule.getInstance().isReady())
+		{
+			//Prompt user to turn on Bluetooth
+			Intent enableBtIntent = new Intent(BluetoothModule.getInstance().getAdapter().ACTION_REQUEST_ENABLE);
+			startActivityForResult(enableBtIntent, BluetoothModule.REQUEST_ENABLE_BT);
 		}
 	}
 
@@ -160,22 +122,7 @@ public class MainActivity extends Activity {
 		out.append("\n...In onDestroy()...");
 	}
 
-	private void CheckBTState() {
-		// Check for Bluetooth support and then check to make sure it is turned on
-
-		// Emulator doesn't support Bluetooth and will return null
-		if(btAdapter==null) { 
-			AlertBox("Fatal Error", "Bluetooth Not supported. Aborting.");
-		} else {
-			if (btAdapter.isEnabled()) {
-				out.append("\n...Bluetooth is enabled...");
-			} else {
-				//Prompt user to turn on Bluetooth
-				Intent enableBtIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);
-				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-			}
-		}
-	}
+	
 
 	public void AlertBox( String title, String message ){
 		new AlertDialog.Builder(this)
@@ -224,74 +171,8 @@ public class MainActivity extends Activity {
 		}
 	};
 	
-	private void BluetoothReadThread(BluetoothSocket btSocket)
-	{
-		final BluetoothSocket socket = btSocket;
-		final Handler handler = new Handler();
-		Runnable runnable = new Runnable(){
-			@Override
-			public void run() {
-				int bytes;
-				//TODO:Fix reading module.Looks like it's missing tons of data
-				byte[] buffer = new byte[30];
-				InputStream inStream;
-				try {
-					inStream = socket.getInputStream();
-					
-					while(true)
-					{
-						try
-						{
-							Log.d("ALIVE","Read");
-							bytes = inStream.read(buffer);
-							String message =  Arrays.toString(buffer);
-							//out.append("Data : ");
-							
-							if( buffer[0] == 36)
-							{
-								Log.d("BT1",message);
-								final PacketParser p = new PacketParser(buffer);
-								if(p.getAccelData()!=null)
-								{
-									Log.d("BT2",p.getAccelData().toString());
-									handler.post(new Runnable()
-									{
-
-										@Override
-										public void run() {
-											out.append("Accel : " + p.getAccelData().toString()+"\n");
-										}
-										
-									});
-									//out.append(p.getAccelData().toString());
-								}
-							}
-//							for (int i =  0 ; i < bytes ; i++)
-//							{
-//								//out.append(" "+ buffer[i]);
-//								Log.d("BT1",buffer[i]);
-//							}
-							//out.append("\n");
-							
-						}catch(IOException e )
-						{
-							Log.d("Error",e.getMessage());
-						}
-						
-						
-					} 
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				
-				
-			}
-			
-		};
+	
 		
-		new Thread(runnable).start();
-		
-	}
 }
 
 
