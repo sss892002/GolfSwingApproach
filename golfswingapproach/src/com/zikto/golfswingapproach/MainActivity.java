@@ -50,31 +50,30 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		out = (TextView) findViewById(R.id.out);
+		plot = (XYPlot) findViewById(R.id.mainPlot);
 
 		out.append("\n...In onCreate()...");
 		
 		plotManager = new PlotManager(plot);
 		
-		//checkBTState();
-		
 		Button connectButton = (Button)findViewById(R.id.buttonConnect);
 		connectButton.setOnClickListener(new Button.OnClickListener(){
-
 			@Override
 			public void onClick(View v) {
-				//AttemptConnect();
 			}
-			
 		});
 		
+		//DEBUG
+		startPhoneSensor();
 	}
 	
 	public void checkBTState()
 	{
 		if(!BluetoothModule.getInstance().isReady())
 		{
+			BluetoothModule.getInstance().getAdapter();
 			//Prompt user to turn on Bluetooth
-			Intent enableBtIntent = new Intent(BluetoothModule.getInstance().getAdapter().ACTION_REQUEST_ENABLE);
+			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableBtIntent, BluetoothModule.REQUEST_ENABLE_BT);
 		}
 	}
@@ -82,7 +81,8 @@ public class MainActivity extends Activity {
 	public void startPhoneSensor()
 	{
 		//Accelerometer Manager
-		accelManager = new AccelerometerManager(this, plotManager);	
+		accelManager = new AccelerometerManager(this, plotManager);
+		accelManager.start();
 	}
 	
 	public void startInvensenseSensor()

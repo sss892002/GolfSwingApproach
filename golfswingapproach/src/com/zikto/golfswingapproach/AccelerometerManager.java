@@ -11,6 +11,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 public class AccelerometerManager implements SensorEventListener{
     private static final float NOISE = (float) 2.0;
@@ -23,6 +24,8 @@ public class AccelerometerManager implements SensorEventListener{
 	private Sensor mAccelerometer;
 	private Activity activity;
 	private PlotManager plotManager;
+	
+	static private int RATE = SensorManager.SENSOR_DELAY_GAME;
 
 
 	public AccelerometerManager(Activity activity,PlotManager plotManager)
@@ -34,7 +37,7 @@ public class AccelerometerManager implements SensorEventListener{
 		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 		//mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+		//mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 	}
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -43,6 +46,7 @@ public class AccelerometerManager implements SensorEventListener{
 	}
 	@Override
 	public void onSensorChanged(SensorEvent event) {
+		//Log.d("Acc","change");
 		float x = event.values[0];
 		float y = event.values[1];
 		float z = event.values[2];
@@ -66,7 +70,7 @@ public class AccelerometerManager implements SensorEventListener{
 	
 	public void start()
 	{
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometer, RATE);
 	}
 	
 	public void stop()
