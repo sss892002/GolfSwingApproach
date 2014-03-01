@@ -30,10 +30,9 @@ public class PacketParser {
  	{
  		if(this.data.get(0) == '$')
  		{
- 			
+ 			Log.d("packet_type", "Type : "+this.data.get(1));
  			switch( this.data.get(1))
  			{
- 			
  			case 1:
  				isDebug = true;
  				break;
@@ -57,7 +56,7 @@ public class PacketParser {
  	{
  		if(isData)
  		{
- 			Log.d("Parser","Data 2 : "+this.data.get(2));
+// 			Log.d("Parser","Data 2 : "+this.data.get(2));
  			switch(this.data.get(2))
  			{
  			case 0: //Accel
@@ -68,23 +67,7 @@ public class PacketParser {
  				{
  					int index = i*4+base;
  					d[i] = fourbytes(this.data.get(index),this.data.get(index+1),this.data.get(index+2),this.data.get(index+3)) * 1.0f/(1<<16);
- 				}
-// 				float d[] = fourbytes(this.data.get(3),this.data.get(4),this.data.get(5),this.data.get(6)) * 1.0f/(1<<16);
-// 				float d2 = fourbytes(this.data.get(7),this.data.get(8),this.data.get(9),this.data.get(10))* 1.0f/(1<<16);
-// 				float d3 = fourbytes(this.data.get(11),this.data.get(12),this.data.get(13),this.data.get(14))* 1.0f/(1<<16);
- 				
-// 				byte[] buffer1 = {this.data.get(3),this.data.get(4),this.data.get(5),this.data.get(6)};
-// 				float d1 = ByteBuffer.wrap(buffer1).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-// 				
-// 				byte[] buffer2 = {this.data.get(7),this.data.get(8),this.data.get(9),this.data.get(10)};
-// 				float d2 = ByteBuffer.wrap(buffer2).order(ByteOrder.BIG_ENDIAN).getFloat();
-// 				
-// 				byte[] buffer3 = {this.data.get(11),this.data.get(12),this.data.get(13),this.data.get(14)};
-// 				float d3 = ByteBuffer.wrap(buffer3).order(ByteOrder.BIG_ENDIAN).getFloat();
- 				
-// 				Log.d("Parser","Data : " + d1 + " "+ d2 + " " +d3);
-// 				setAccelData(d1, d2, d3);
- 				
+ 				} 				
  				Log.d("Parser","Data : " + d[0]+ " "+ d[1] + " " +d[2]);
  				setAccelData(d[0], d[1], d[2]);
  			}
@@ -131,7 +114,10 @@ public class PacketParser {
  	
  	public ArrayList<Float> getAccelData()
  	{
- 		return AccelList;
+ 		if(isData)
+ 			return AccelList;
+ 		else
+ 			return null;
  	} 	
  	
  	public float getAccelMag()

@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
-import com.example.golfswingapproach.R;
+import com.zikto.golfswingapproach.R;
 import com.zikto.invensense.BluetoothModule;
 import com.zikto.invensense.utils.PacketParser;
 //import com.example.bttest.R;

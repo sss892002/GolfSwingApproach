@@ -47,7 +47,7 @@ public class InvensenseManager {
 			public void run() {
 				int bytes;
 				//TODO:Fix reading module.Looks like it's missing tons of data
-				byte[] buffer = new byte[30];
+				byte[] buffer = new byte[23];
 				InputStream inStream;
 				try {
 					inStream = socket.getInputStream();
@@ -59,13 +59,12 @@ public class InvensenseManager {
 							Log.d("ALIVE","Read");
 							bytes = inStream.read(buffer);
 							String message =  Arrays.toString(buffer);
-							//out.append("Data : ");
 							
-							if( buffer[0] == 36)
+							if( buffer[0] == '$' && buffer[21]=='\r' && buffer[22]=='\n')
 							{
 								Log.d("BT1",message);
 								final PacketParser p = new PacketParser(buffer);
-								if(p.getAccelData()!=null)
+								if(p.isData())
 								{
 									Log.d("BT2","Data " + p.getAccelData().toString());
 									Log.d("BT2","Mag "+ p.getAccelMag());
