@@ -83,45 +83,22 @@ public class MainActivity extends Activity {
 		invenManager.start();
 	}
 	
-	public void setAccel(float value)
-	{
-		
-	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
 		out.append("\n...In onStart()...");
-		for(int i = 0 ; i < 10 ; i ++)
-		{
-//			if(!AttemptConnect())
-//			{
-//				out.append("\nReconnect in 3 seconds");
-//				out.invalidate();
-//				SystemClock.sleep(3000);
-//			}
-//			else
-//			{
-//				break;
-//			}
-			
-		}
-		
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		 
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-
 		out.append("\n...In onPause()...");
-
 	}
 
 	@Override
@@ -136,8 +113,6 @@ public class MainActivity extends Activity {
 		out.append("\n...In onDestroy()...");
 	}
 
-	
-
 	public void AlertBox( String title, String message ){
 		new AlertDialog.Builder(this)
 		.setTitle( title )
@@ -148,7 +123,6 @@ public class MainActivity extends Activity {
 			}
 		}).show();
 	}
-
 
 	public final BroadcastReceiver mReciever = new BroadcastReceiver() {
 
@@ -173,20 +147,8 @@ public class MainActivity extends Activity {
 
 				out.append("ACTION_DISCOVERY\n");
 			}
-			//	  			if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-			//	  				setProgressBarIndeterminateVisibility(false);
-			//	  				//setTitle(R.string.select_device);
-			//	  				if(mNewDevicesArrayAdapter.getCount() == 0){
-			//	  					String noDevice = getResources().getText(R.string.none_paired).toString();
-			//	  					((Object) mNewDevicesArrayAdapter).add(noDevice);
-			//	  				}
-			//	  			}
-
 		}
 	};
-	
-	
-		
 }
 
 
