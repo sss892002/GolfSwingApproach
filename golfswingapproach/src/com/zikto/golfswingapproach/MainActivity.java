@@ -1,15 +1,8 @@
 package com.zikto.golfswingapproach;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.app.Activity;
 import android.content.Intent;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.UUID;
 
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
@@ -20,25 +13,22 @@ import com.zikto.invensense.utils.PacketParser;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.IntentFilter;
 
 
 public class MainActivity extends Activity {
 	TextView out;
 	AccelerometerManager accelManager;
+	InvensenseManager invenManager;
 	PlotManager plotManager;
 	
 	XYPlot plot;
@@ -64,7 +54,8 @@ public class MainActivity extends Activity {
 		});
 		
 		//DEBUG
-		startPhoneSensor();
+		//startPhoneSensor();
+		startInvensenseSensor();
 	}
 	
 	public void checkBTState()
@@ -88,6 +79,8 @@ public class MainActivity extends Activity {
 	public void startInvensenseSensor()
 	{
 		checkBTState();
+		invenManager = new InvensenseManager(this, plotManager);
+		invenManager.start();
 	}
 	
 	public void setAccel(float value)

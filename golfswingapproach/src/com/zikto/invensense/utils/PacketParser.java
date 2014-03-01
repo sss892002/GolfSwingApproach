@@ -61,9 +61,17 @@ public class PacketParser {
  			switch(this.data.get(2))
  			{
  			case 0: //Accel
- 				float d1 = fourbytes(this.data.get(3),this.data.get(4),this.data.get(5),this.data.get(6)) * 1.0f/(1<<16);
- 				float d2 = fourbytes(this.data.get(7),this.data.get(8),this.data.get(9),this.data.get(10))* 1.0f/(1<<16);
- 				float d3 = fourbytes(this.data.get(11),this.data.get(12),this.data.get(13),this.data.get(14))* 1.0f/(1<<16);
+ 				float[] d={0,0,0};
+ 				final int base = 3;
+ 				
+ 				for (int i = 0 ; i < 3 ; i++)
+ 				{
+ 					int index = i*4+base;
+ 					d[i] = fourbytes(this.data.get(index),this.data.get(index+1),this.data.get(index+2),this.data.get(index+3)) * 1.0f/(1<<16);
+ 				}
+//// 				float d[] = fourbytes(this.data.get(3),this.data.get(4),this.data.get(5),this.data.get(6)) * 1.0f/(1<<16);
+// 				float d2 = fourbytes(this.data.get(7),this.data.get(8),this.data.get(9),this.data.get(10))* 1.0f/(1<<16);
+// 				float d3 = fourbytes(this.data.get(11),this.data.get(12),this.data.get(13),this.data.get(14))* 1.0f/(1<<16);
  				
 // 				byte[] buffer1 = {this.data.get(3),this.data.get(4),this.data.get(5),this.data.get(6)};
 // 				float d1 = ByteBuffer.wrap(buffer1).order(ByteOrder.LITTLE_ENDIAN).getFloat();
@@ -74,20 +82,26 @@ public class PacketParser {
 // 				byte[] buffer3 = {this.data.get(11),this.data.get(12),this.data.get(13),this.data.get(14)};
 // 				float d3 = ByteBuffer.wrap(buffer3).order(ByteOrder.BIG_ENDIAN).getFloat();
  				
- 				Log.d("Parser","Data : " + d1 + " "+ d2 + " " +d3);
- 				setAccelData(d1, d2, d3);
+// 				Log.d("Parser","Data : " + d1 + " "+ d2 + " " +d3);
+// 				setAccelData(d1, d2, d3);
+ 				
+ 				Log.d("Parser","Data : " + d[0]+ " "+ d[1] + " " +d[2]);
+ 				setAccelData(d[0], d[1], d[2]);
  			}
  		}
  	}
  	
  	
  	static long fourbytes(byte d1, byte d2, byte d3, byte d4)
- 	{
- 		long d = d1*(1<<24) + d2*(1<<16) + d3*(1<<8) + d4;
+ 	{ 
+ 		byte data[] = {d1,d2,d3,d4};
+ 		ByteBuffer buffer = ByteBuffer.wrap(data);
  		
- 	    if (d > 2147483648l)
+ 		long d = (d1+127)*(1<<24) + (d2+127)*(1<<16) + (d3+127)*(1<<8) + d4+127;
+ 		if (d > 2147483648l)
  	        d-= 4294967296l;
-
+ 		Log.d("FB","d1: "+d1+" d2: "+d2+" d3: "+d3+" d4: "+d4+"\nD : "+d);
+ 	    Log.d("FB,","byte buffer : " + buffer.getFloat());
  		return d;
  	}
  	

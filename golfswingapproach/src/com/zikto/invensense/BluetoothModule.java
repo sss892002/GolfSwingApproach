@@ -57,6 +57,11 @@ public class BluetoothModule {
 	{
 		return btAdapter;
 	}
+	
+	public BluetoothSocket getSocket()
+	{
+		return btSocket;
+	}
 
 	public boolean isReady()
 	{
@@ -103,7 +108,7 @@ public class BluetoothModule {
 //			out.append("Start Reading...");
 			//		btThread = new BluetoothThread(btSocket);
 			//		btThread.start();
-			BluetoothReadThread(btSocket);
+			//BluetoothReadThread(btSocket);
 			return true;
 		} catch (IOException e) {
 
