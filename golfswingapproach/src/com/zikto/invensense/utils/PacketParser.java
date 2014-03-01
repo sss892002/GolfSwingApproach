@@ -69,7 +69,7 @@ public class PacketParser {
  					int index = i*4+base;
  					d[i] = fourbytes(this.data.get(index),this.data.get(index+1),this.data.get(index+2),this.data.get(index+3)) * 1.0f/(1<<16);
  				}
-//// 				float d[] = fourbytes(this.data.get(3),this.data.get(4),this.data.get(5),this.data.get(6)) * 1.0f/(1<<16);
+// 				float d[] = fourbytes(this.data.get(3),this.data.get(4),this.data.get(5),this.data.get(6)) * 1.0f/(1<<16);
 // 				float d2 = fourbytes(this.data.get(7),this.data.get(8),this.data.get(9),this.data.get(10))* 1.0f/(1<<16);
 // 				float d3 = fourbytes(this.data.get(11),this.data.get(12),this.data.get(13),this.data.get(14))* 1.0f/(1<<16);
  				
@@ -97,7 +97,8 @@ public class PacketParser {
  		byte data[] = {d1,d2,d3,d4};
  		ByteBuffer buffer = ByteBuffer.wrap(data);
  		
- 		long d = (d1+127)*(1<<24) + (d2+127)*(1<<16) + (d3+127)*(1<<8) + d4+127;
+ 		//long d = (d1+127)*(1<<24) + (d2+127)*(1<<16) + (d3+127)*(1<<8) + d4+127;
+ 		int d =((int)d1 << 24) | ((int)d2<<16) | ((int)d3<<8) | (int)d4;
  		if (d > 2147483648l)
  	        d-= 4294967296l;
  		Log.d("FB","d1: "+d1+" d2: "+d2+" d3: "+d3+" d4: "+d4+"\nD : "+d);

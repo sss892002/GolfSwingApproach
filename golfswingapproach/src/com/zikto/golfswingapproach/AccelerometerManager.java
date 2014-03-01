@@ -1,17 +1,12 @@
 package com.zikto.golfswingapproach;
 
-import java.util.ArrayList;
-
-import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlot;
-
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
+//import android.util.Log;
 
 public class AccelerometerManager implements SensorEventListener{
     private static final float NOISE = (float) 2.0;

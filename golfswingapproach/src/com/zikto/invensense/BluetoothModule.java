@@ -134,7 +134,7 @@ public class BluetoothModule {
 			public void run() {
 				int bytes;
 				//TODO:Fix reading module.Looks like it's missing tons of data
-				byte[] buffer = new byte[30];
+				byte[] buffer = new byte[23];
 				InputStream inStream;
 				try {
 					inStream = socket.getInputStream();
