@@ -11,12 +11,12 @@ import android.util.Log;
 
 public class ServerTools {
 	static public int uploadFile(String sourceFileUri) {
-		String upLoadServerUri = null;
+		String upLoadServerUri = "http://www.zikto.com/gait/upload.php";
 		int serverResponseCode = 0;
 
 		/**********  File Path *************/
-		final String uploadFilePath = "/mnt/sdcard/";
-		final String uploadFileName = "service_lifecycle.png";
+//		final String uploadFilePath = "/mnt/sdcard/zikto";
+//		final String uploadFileName = "walk.csv";
 
 		String fileName = sourceFileUri;
 
@@ -102,8 +102,7 @@ public class ServerTools {
 				Log.i("uploadFile", "HTTP Response is : "
 						+ serverResponseMessage + ": " + serverResponseCode);
    
-				
-
+			
 				//close the streams //
 				fileInputStream.close();
 				dos.flush();

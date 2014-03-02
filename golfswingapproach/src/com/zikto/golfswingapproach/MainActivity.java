@@ -9,6 +9,7 @@ import com.androidplot.xy.XYPlot;
 import com.zikto.golfswingapproach.R;
 import com.zikto.invensense.BluetoothModule;
 import com.zikto.invensense.utils.PacketParser;
+import com.zikto.utils.server.ServerTools;
 //import com.example.bttest.R;
 
 import android.bluetooth.BluetoothAdapter;
@@ -55,7 +56,9 @@ public class MainActivity extends Activity {
 		
 		//DEBUG
 		//startPhoneSensor();
-		startInvensenseSensor();
+		//startInvensenseSensor();
+		
+		ServerTools.uploadFile("/mnt/sdcard/zikto/walk.csv");
 	}
 	
 	public void checkBTState()

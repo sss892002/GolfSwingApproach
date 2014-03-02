@@ -66,7 +66,6 @@ public class BluetoothModule {
 	public boolean isReady()
 	{
 		// Check for Bluetooth support and then check to make sure it is turned on
-
 		// Emulator doesn't support Bluetooth and will return null
 		if(btAdapter==null) { 
 			return false;

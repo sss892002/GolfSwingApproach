@@ -36,6 +36,7 @@ public class InvensenseManager {
 	public void stop()
 	{
 		//TODO stop the thread , disconnect from Bluetooth
+		
 	}
 	
 	private void BluetoothReadThread(BluetoothSocket btSocket)
