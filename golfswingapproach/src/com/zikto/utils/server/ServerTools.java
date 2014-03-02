@@ -3,6 +3,8 @@ package com.zikto.utils.server;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -64,7 +66,10 @@ public class ServerTools {
 				conn.setRequestProperty("ENCTYPE", "multipart/form-data");
 				conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 				conn.setRequestProperty("uploaded_file", fileName); 
-
+//				conn.connect();
+				
+				OutputStream test = conn.getOutputStream();
+				
 				dos = new DataOutputStream(conn.getOutputStream());
 
 				dos.writeBytes(twoHyphens + boundary + lineEnd); 
