@@ -2,6 +2,7 @@ package com.zikto.golfswingapproach;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.app.Activity;
 import android.content.Intent;
 
@@ -18,6 +19,7 @@ import com.zikto.invensense.BluetoothModule;
 import com.zikto.invensense.utils.PacketParser;
 import com.zikto.utils.server.ServerTools;
 //import com.example.bttest.R;
+
 
 
 
@@ -49,6 +51,10 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+		StrictMode.setThreadPolicy(policy); 
+		
 		mheadtext = (TextView)findViewById(R.id.headtext);
 
 		RadioGroup mrgroup = (RadioGroup)findViewById(R.id.rgroup);
@@ -98,9 +104,10 @@ public class MainActivity extends Activity {
 				{
 					startbutton.setText("Start Tracking");
 					String message = "";
-
-					message="File Writing Test";
-
+//					for(float value  : walkList)
+//					{
+//						message=message+","+value;
+//					}
 					String state = Environment.getExternalStorageState();
 					if (Environment.MEDIA_MOUNTED.equals(state)) {
 
@@ -130,7 +137,7 @@ public class MainActivity extends Activity {
 				else
 				{
 					startbutton.setText("Stop Tracking");
-
+//					walkList.clear();
 				}
 				isStart = !isStart;
 
