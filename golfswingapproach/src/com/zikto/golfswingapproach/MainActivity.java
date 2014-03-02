@@ -1,8 +1,15 @@
 package com.zikto.golfswingapproach;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
 import android.content.Intent;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
@@ -12,13 +19,19 @@ import com.zikto.invensense.utils.PacketParser;
 import com.zikto.utils.server.ServerTools;
 //import com.example.bttest.R;
 
+
+
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,31 +40,97 @@ import android.content.DialogInterface.OnClickListener;
 
 
 public class MainActivity extends Activity {
+
+	TextView mheadtext;
 	TextView out;
 	AccelerometerManager accelManager;
 	InvensenseManager invenManager;
 	PlotManager plotManager;
-	
-	XYPlot plot;
-	//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mheadtext = (TextView)findViewById(R.id.headtext);
+
+		RadioGroup mrgroup = (RadioGroup)findViewById(R.id.rgroup);
+		mrgroup.setOnCheckedChangeListener(mRadioCheck);
+
+
+		final Button startbutton = (Button)findViewById(R.id.startbtn);
+
+
+		XYPlot plot;
+		//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
+		/** Called when the activity is first created. */
+
 
 		out = (TextView) findViewById(R.id.out);
 		plot = (XYPlot) findViewById(R.id.mainPlot);
 
 		out.append("\n...In onCreate()...");
-		
+
 		plotManager = new PlotManager(plot);
-		
-		Button connectButton = (Button)findViewById(R.id.buttonConnect);
-		connectButton.setOnClickListener(new Button.OnClickListener(){
-			@Override
+
+
+
+		//DEBUG
+
+		startPhoneSensor();
+
+
+		startbutton.setOnClickListener(new Button.OnClickListener() {
+
+			private boolean isStart=false;
+
 			public void onClick(View v) {
+				EditText edit=(EditText)findViewById(R.id.editText1);
+				String filename = edit.getText().toString();
+
+				if(isStart)
+				{
+					startbutton.setText("Start Tracking");
+					String message = "";
+
+					message="File Writing Test";
+
+					String state = Environment.getExternalStorageState();
+					if (Environment.MEDIA_MOUNTED.equals(state)) {
+
+						try {
+							//
+							//This will get the SD Card directory and create a folder named MyFiles in it.
+							File sdCard = Environment.getExternalStorageDirectory();
+							File directory = new File (sdCard.getAbsolutePath() + "/ziktoshawn");
+							directory.mkdirs();
+
+							//Now create the file in the above directory and write the contents into it
+							File file = new File(directory, filename+".csv");
+							FileOutputStream fOut = new FileOutputStream(file);
+							OutputStreamWriter osw = new OutputStreamWriter(fOut);
+							osw.write(message);
+							osw.flush();
+							osw.close();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch(IOException e) {
+							e.printStackTrace();
+						}
+
+					}
+
+				}
+				else
+				{
+					startbutton.setText("Stop Tracking");
+
+				}
+				isStart = !isStart;
+
+
+
+				//save as filename 
+
 			}
+
 		});
 		
 		//DEBUG
@@ -60,7 +139,35 @@ public class MainActivity extends Activity {
 		
 		ServerTools.uploadFile("/mnt/sdcard/zikto/walk.csv");
 	}
-	
+
+	RadioGroup.OnCheckedChangeListener mRadioCheck = new RadioGroup.OnCheckedChangeListener() {
+		public void onCheckedChanged(RadioGroup group, int checkedId) {
+			if (group.getId()==R.id.rgroup) {
+				switch (checkedId) {
+				case R.id.phonebtn:
+					// Put phoneBluetooth Module Here
+					Toast.makeText(MainActivity.this,"Phone Sensor Selected",Toast.LENGTH_SHORT).show();
+
+					break;
+
+
+				case R.id.invensensebtn:
+					Toast.makeText(MainActivity.this,"Invensense Sensor Selected",Toast.LENGTH_SHORT).show();
+					//  Put invensense Parsing module here
+//					Button connectButton = (Button)findViewById(R.id.buttonConnect);
+//					connectButton.setOnClickListener(new Button.OnClickListener(){
+//						@Override
+//						public void onClick(View v) {
+//						}
+//					});
+//
+//					break;
+				}
+			}
+		}
+	};
+
+
 	public void checkBTState()
 	{
 		if(!BluetoothModule.getInstance().isReady())
@@ -71,28 +178,28 @@ public class MainActivity extends Activity {
 			startActivityForResult(enableBtIntent, BluetoothModule.REQUEST_ENABLE_BT);
 		}
 	}
-	
+
 	public void startPhoneSensor()
 	{
 		//Accelerometer Manager
 		accelManager = new AccelerometerManager(this, plotManager);
 		accelManager.start();
 	}
-	
+
 	public void startInvensenseSensor()
 	{
 		checkBTState();
 		invenManager = new InvensenseManager(this, plotManager);
 		invenManager.start();
 	}
-	
+
 
 	@Override
 	public void onStart() {
 		super.onStart();
 		out.append("\n...In onStart()...");
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -115,6 +222,7 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 		out.append("\n...In onDestroy()...");
 	}
+
 
 	public void AlertBox( String title, String message ){
 		new AlertDialog.Builder(this)

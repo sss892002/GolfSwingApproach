@@ -53,7 +53,6 @@ public class PacketParser {
 		{
 			Log.d("PacketParser", "Init Failed");
 		}
-
 	}
 
 	private void ParseData()
