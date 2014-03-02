@@ -130,6 +130,6 @@ public class PacketParser {
  			return (float) Math.sqrt(d1+d2+d3);
  		}
  		else
- 			return -1f;
+ 			return -9999.0f;
  	}
 }

@@ -4,17 +4,103 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <TextView
+
+  <TextView
+        android:id="@+id/headtext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="20dip"
+        android:text="Select the Sensor"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" >
+<RadioGroup
+    			android:id="@+id/rgroup"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:orientation="horizontal"
+    			android:checkedButton="@+id/phonebtn"
+            >
+            <RadioButton
+                android:id="@+id/phonebtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Smartphone" />
+
+    
+
+            <RadioButton
+                android:id="@+id/invensensebtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Invensense" />
+            
+            </RadioGroup>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/filename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Type File name" 
+            android:textSize="16sp"
+        android:textStyle="bold" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10" 
+        android:text="Insert Filename Here">
+
+        <requestFocus />
+    </EditText>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/connectButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connect" />
+
+        <Button
+            android:id="@+id/startbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Tracking" />
+    </LinearLayout>
+    
+        <TextView
         android:id="@+id/out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/buttonConnect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/connect" />
-
+   
+    
     <com.androidplot.xy.XYPlot
         android:id="@+id/mainPlot"
         android:layout_width="fill_parent"
