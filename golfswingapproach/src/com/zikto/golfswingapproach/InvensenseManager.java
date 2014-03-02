@@ -70,10 +70,11 @@ public class InvensenseManager {
 									Log.d("BT2","Mag "+ p.getAccelMag());
 									handler.post(new Runnable()
 									{
-
 										@Override
 										public void run() {
-											plotManager.addValue(p.getAccelMag());
+											float mag = p.getAccelMag();
+											if(mag != PacketParser.NAN)
+												plotManager.addValue(p.getAccelMag());
 										}
 										
 									});
