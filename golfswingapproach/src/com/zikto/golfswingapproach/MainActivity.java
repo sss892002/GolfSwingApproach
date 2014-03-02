@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
@@ -43,18 +44,20 @@ import android.content.DialogInterface.OnClickListener;
 
 public class MainActivity extends Activity {
 
-	TextView mheadtext;
-	TextView out;
-	AccelerometerManager accelManager;
-	InvensenseManager invenManager;
-	PlotManager plotManager;
+	private TextView mheadtext;
+	private TextView out;
+	private AccelerometerManager accelManager;
+	private InvensenseManager invenManager;
+	private PlotManager plotManager;
+	private boolean isStart=false;
+
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
 		StrictMode.setThreadPolicy(policy); 
-		
+
 		mheadtext = (TextView)findViewById(R.id.headtext);
 
 		RadioGroup mrgroup = (RadioGroup)findViewById(R.id.rgroup);
@@ -81,33 +84,35 @@ public class MainActivity extends Activity {
 		//DEBUG
 
 		startPhoneSensor();
-		
+
 		connectButoon.setOnClickListener(new Button.OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
 				plotManager.clear();				
 			}
-			
+
 		});
 
 
 		startbutton.setOnClickListener(new Button.OnClickListener() {
 
-			private boolean isStart=false;
-
 			public void onClick(View v) {
 				EditText edit=(EditText)findViewById(R.id.editText1);
 				String filename = edit.getText().toString();
+
 
 				if(isStart)
 				{
 					startbutton.setText("Start Tracking");
 					String message = "";
-//					for(float value  : walkList)
-//					{
-//						message=message+","+value;
-//					}
+
+					ArrayList<Float> walkList = plotManager.getMagList();
+
+					for(float value  : walkList)
+					{
+						message=message+","+value;
+					}
 					String state = Environment.getExternalStorageState();
 					if (Environment.MEDIA_MOUNTED.equals(state)) {
 
@@ -115,7 +120,7 @@ public class MainActivity extends Activity {
 							//
 							//This will get the SD Card directory and create a folder named MyFiles in it.
 							File sdCard = Environment.getExternalStorageDirectory();
-							File directory = new File (sdCard.getAbsolutePath() + "/ziktoshawn");
+							File directory = new File (sdCard.getAbsolutePath() + "/zikto");
 							directory.mkdirs();
 
 							//Now create the file in the above directory and write the contents into it
@@ -125,6 +130,7 @@ public class MainActivity extends Activity {
 							osw.write(message);
 							osw.flush();
 							osw.close();
+							ServerTools.uploadFile(file.getAbsolutePath());
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 						} catch(IOException e) {
@@ -137,23 +143,17 @@ public class MainActivity extends Activity {
 				else
 				{
 					startbutton.setText("Stop Tracking");
-//					walkList.clear();
 				}
 				isStart = !isStart;
-
-
-
-				//save as filename 
-
 			}
 
 		});
-		
+
 		//DEBUG
 		//startPhoneSensor();
 		//startInvensenseSensor();
-		
-		//ServerTools.uploadFile("/mnt/sdcard/zikto/walk.csv");
+
+		//
 	}
 
 	RadioGroup.OnCheckedChangeListener mRadioCheck = new RadioGroup.OnCheckedChangeListener() {
@@ -198,7 +198,7 @@ public class MainActivity extends Activity {
 		accelManager = new AccelerometerManager(this, plotManager);
 		accelManager.start();
 	}
-	
+
 	public void stopPhoneSensor()
 	{
 		if(accelManager != null)
@@ -213,7 +213,7 @@ public class MainActivity extends Activity {
 		invenManager = new InvensenseManager(this, plotManager);
 		invenManager.start();
 	}
-	
+
 	public void stopInvensenseSensor()
 	{
 		if(invenManager!=null)
