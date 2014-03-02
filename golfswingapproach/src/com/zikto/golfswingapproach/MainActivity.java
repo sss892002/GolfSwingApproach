@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 
 
 		final Button startbutton = (Button)findViewById(R.id.startbtn);
-
+		final Button connectButoon = (Button)findViewById(R.id.connectButton);
 
 		XYPlot plot;
 		//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
@@ -74,7 +74,16 @@ public class MainActivity extends Activity {
 
 		//DEBUG
 
-		startPhoneSensor();
+		//startPhoneSensor();
+		
+		connectButoon.setOnClickListener(new Button.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				plotManager.clear();				
+			}
+			
+		});
 
 
 		startbutton.setOnClickListener(new Button.OnClickListener() {
@@ -137,31 +146,28 @@ public class MainActivity extends Activity {
 		//startPhoneSensor();
 		//startInvensenseSensor();
 		
-		ServerTools.uploadFile("/mnt/sdcard/zikto/walk.csv");
+		//ServerTools.uploadFile("/mnt/sdcard/zikto/walk.csv");
 	}
 
 	RadioGroup.OnCheckedChangeListener mRadioCheck = new RadioGroup.OnCheckedChangeListener() {
 		public void onCheckedChanged(RadioGroup group, int checkedId) {
 			if (group.getId()==R.id.rgroup) {
-				switch (checkedId) {
+
+				//plotManager.clear();
+				switch (checkedId) 
+				{
+
 				case R.id.phonebtn:
 					// Put phoneBluetooth Module Here
 					Toast.makeText(MainActivity.this,"Phone Sensor Selected",Toast.LENGTH_SHORT).show();
-
+					stopInvensenseSensor();
+					startPhoneSensor();
 					break;
-
-
 				case R.id.invensensebtn:
 					Toast.makeText(MainActivity.this,"Invensense Sensor Selected",Toast.LENGTH_SHORT).show();
-					//  Put invensense Parsing module here
-//					Button connectButton = (Button)findViewById(R.id.buttonConnect);
-//					connectButton.setOnClickListener(new Button.OnClickListener(){
-//						@Override
-//						public void onClick(View v) {
-//						}
-//					});
-//
-//					break;
+					stopPhoneSensor();
+					startInvensenseSensor();
+					break;
 				}
 			}
 		}
@@ -185,12 +191,28 @@ public class MainActivity extends Activity {
 		accelManager = new AccelerometerManager(this, plotManager);
 		accelManager.start();
 	}
+	
+	public void stopPhoneSensor()
+	{
+		if(accelManager != null)
+		{
+			accelManager.stop();
+		}
+	}
 
 	public void startInvensenseSensor()
 	{
 		checkBTState();
 		invenManager = new InvensenseManager(this, plotManager);
 		invenManager.start();
+	}
+	
+	public void stopInvensenseSensor()
+	{
+		if(invenManager!=null)
+		{
+			invenManager.stop();
+		}
 	}
 
 

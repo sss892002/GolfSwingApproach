@@ -4,8 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-
-  <TextView
+    <TextView
         android:id="@+id/headtext"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -25,30 +24,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center" >
-<RadioGroup
-    			android:id="@+id/rgroup"
-    			android:layout_width="wrap_content"
-    			android:layout_height="wrap_content"
-    			android:orientation="horizontal"
-    			android:checkedButton="@+id/phonebtn"
-            >
-            <RadioButton
-                android:id="@+id/phonebtn"
+
+            <RadioGroup
+                android:id="@+id/rgroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Smartphone" />
+                android:checkedButton="@+id/phonebtn"
+                android:orientation="horizontal" >
 
-    
+                <RadioButton
+                    android:id="@+id/phonebtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Smartphone" />
 
-            <RadioButton
-                android:id="@+id/invensensebtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Invensense" />
-            
+                <RadioButton
+                    android:id="@+id/invensensebtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Invensense" />
             </RadioGroup>
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
@@ -61,17 +57,17 @@
             android:id="@+id/filename"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Type File name" 
+            android:text="Type File name"
             android:textSize="16sp"
-        android:textStyle="bold" />
+            android:textStyle="bold" />
     </LinearLayout>
 
     <EditText
         android:id="@+id/editText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" 
-        android:text="Insert Filename Here">
+        android:ems="10"
+        android:text="Insert Filename Here" >
 
         <requestFocus />
     </EditText>
@@ -94,13 +90,12 @@
             android:layout_height="wrap_content"
             android:text="Start Tracking" />
     </LinearLayout>
-    
-        <TextView
+
+    <TextView
         android:id="@+id/out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-   
-    
+
     <com.androidplot.xy.XYPlot
         android:id="@+id/mainPlot"
         android:layout_width="fill_parent"

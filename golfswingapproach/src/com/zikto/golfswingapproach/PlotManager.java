@@ -11,7 +11,7 @@ public class PlotManager {
 	private static final int HISTORY_SIZE = 500; 
 	private XYPlot plot;
     private SimpleXYSeries magSeries = null; ///Acceleration Magnitude Series
-    private ArrayList<Float> magList = new ArrayList<Float>();
+   // private ArrayList<Float> magList = new ArrayList<Float>();
 	
 	public PlotManager(XYPlot plot)
 	{
@@ -33,7 +33,7 @@ public class PlotManager {
 	
 	public void addValue(float value)
 	{
-		magList.add(value);
+		//magList.add(value);
 
 		if(magSeries.size() > HISTORY_SIZE)
 		{
@@ -42,5 +42,13 @@ public class PlotManager {
 
 		magSeries.addLast(null, value);
 		plot.redraw();
+	}
+	public void clear()
+	{
+		for(int  i = 0 ; i < magSeries.size();i++)
+		{
+			magSeries.removeFirst();
+		}
+		///plot.clear();
 	}
 }
