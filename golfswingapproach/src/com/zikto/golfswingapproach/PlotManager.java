@@ -2,6 +2,8 @@ package com.zikto.golfswingapproach;
 
 import java.util.ArrayList;
 
+import android.util.Log;
+
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
@@ -11,7 +13,6 @@ public class PlotManager {
 	private static final int HISTORY_SIZE = 500; 
 	private XYPlot plot;
     private SimpleXYSeries magSeries = null; ///Acceleration Magnitude Series
-   // private ArrayList<Float> magList = new ArrayList<Float>();
 	
 	public PlotManager(XYPlot plot)
 	{
@@ -33,8 +34,6 @@ public class PlotManager {
 	
 	public void addValue(float value)
 	{
-		//magList.add(value);
-
 		if(magSeries.size() > HISTORY_SIZE)
 		{
 			magSeries.removeFirst();
@@ -43,12 +42,13 @@ public class PlotManager {
 		magSeries.addLast(null, value);
 		plot.redraw();
 	}
+	
 	public void clear()
 	{
-		for(int  i = 0 ; i < magSeries.size();i++)
+		for(int  i = 0 ; i < HISTORY_SIZE;i++)
 		{
-			magSeries.removeFirst();
+			if(magSeries.size() != 0)
+				magSeries.removeFirst();
 		}
-		///plot.clear();
 	}
 }

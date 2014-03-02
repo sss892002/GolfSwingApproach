@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
 
 		//DEBUG
 
-		//startPhoneSensor();
+		startPhoneSensor();
 		
 		connectButoon.setOnClickListener(new Button.OnClickListener(){
 
