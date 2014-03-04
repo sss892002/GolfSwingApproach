@@ -1,4 +1,4 @@
-package com.zikto.golfswingapproach;
+package com.zikto.ziktowalkprofiler;
 
 import android.app.Activity;
 import android.content.Context;
