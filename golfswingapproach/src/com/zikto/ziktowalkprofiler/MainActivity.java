@@ -130,7 +130,8 @@ public class MainActivity extends Activity {
 							osw.write(message);
 							osw.flush();
 							osw.close();
-							ServerTools.uploadFile(file.getAbsolutePath());
+							int response = ServerTools.uploadFile(file.getAbsolutePath());
+							out.append("\nResponse from Server : " + response);
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 						} catch(IOException e) {
