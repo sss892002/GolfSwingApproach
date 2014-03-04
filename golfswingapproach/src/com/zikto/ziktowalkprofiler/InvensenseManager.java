@@ -1,4 +1,4 @@
-package com.zikto.golfswingapproach;
+package com.zikto.ziktowalkprofiler;
 
 import java.io.IOException;
 import java.io.InputStream;

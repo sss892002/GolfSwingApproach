@@ -1,4 +1,4 @@
-package com.zikto.golfswingapproach;
+package com.zikto.ziktowalkprofiler;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +20,7 @@ public class AccelerometerManager implements SensorEventListener{
 	private Activity activity;
 	private PlotManager plotManager;
 	
-	static private int RATE = SensorManager.SENSOR_DELAY_GAME;
+	static private int RATE = SensorManager.SENSOR_DELAY_FASTEST;
 
 
 	public AccelerometerManager(Activity activity,PlotManager plotManager)

@@ -43,6 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Invensense" />
+
             </RadioGroup>
         </LinearLayout>
     </LinearLayout>
@@ -67,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:text="Insert Filename Here" >
+        android:hint="Name" >
 
         <requestFocus />
     </EditText>

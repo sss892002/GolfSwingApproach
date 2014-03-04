@@ -1,8 +1,9 @@
-package com.zikto.golfswingapproach;
+package com.zikto.ziktowalkprofiler;
 
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 
@@ -11,7 +12,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
@@ -75,7 +79,7 @@ public class MainActivity extends Activity {
 		out = (TextView) findViewById(R.id.out);
 		plot = (XYPlot) findViewById(R.id.mainPlot);
 
-		out.append("\n...In onCreate()...");
+		out.append("ZIKTO, Ready...");
 
 		plotManager = new PlotManager(plot);
 
@@ -83,7 +87,6 @@ public class MainActivity extends Activity {
 
 		//DEBUG
 
-		startPhoneSensor();
 
 		connectButoon.setOnClickListener(new Button.OnClickListener(){
 
@@ -97,13 +100,22 @@ public class MainActivity extends Activity {
 
 		startbutton.setOnClickListener(new Button.OnClickListener() {
 
+			@SuppressLint("SimpleDateFormat")
 			public void onClick(View v) {
 				EditText edit=(EditText)findViewById(R.id.editText1);
 				String filename = edit.getText().toString();
-
+				if(filename=="")
+				{
+					filename="default";
+				}
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+				String currentDateandTime = sdf.format(new Date());
+				
+				filename = filename+currentDateandTime+".csv";
 
 				if(isStart)
 				{
+					stopPhoneSensor();
 					startbutton.setText("Start Tracking");
 					String message = "";
 
@@ -124,13 +136,17 @@ public class MainActivity extends Activity {
 							directory.mkdirs();
 
 							//Now create the file in the above directory and write the contents into it
-							File file = new File(directory, filename+".csv");
+							File file = new File(directory, filename);
 							FileOutputStream fOut = new FileOutputStream(file);
 							OutputStreamWriter osw = new OutputStreamWriter(fOut);
 							osw.write(message);
 							osw.flush();
 							osw.close();
-							ServerTools.uploadFile(file.getAbsolutePath());
+							int response = ServerTools.uploadFile(file.getAbsolutePath());
+							if(response == 200)
+								out.append("\nSending to server : SUCCESS!");
+							else
+								out.append("\nSending to server : FAIL");
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 						} catch(IOException e) {
@@ -142,6 +158,7 @@ public class MainActivity extends Activity {
 				}
 				else
 				{
+					startPhoneSensor();
 					startbutton.setText("Stop Tracking");
 				}
 				isStart = !isStart;
@@ -226,7 +243,7 @@ public class MainActivity extends Activity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		out.append("\n...In onStart()...");
+	//	out.append("\n...In onStart()...");
 	}
 
 	@Override
@@ -237,19 +254,19 @@ public class MainActivity extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		out.append("\n...In onPause()...");
+	//	out.append("\n...In onPause()...");
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		out.append("\n...In onStop()...");
+	//	out.append("\n...In onStop()...");
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		out.append("\n...In onDestroy()...");
+	//	out.append("\n...In onDestroy()...");
 	}
 
 
