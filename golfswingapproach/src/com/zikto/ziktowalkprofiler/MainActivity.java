@@ -14,20 +14,14 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
-import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
-import com.zikto.golfswingapproach.R;
+import com.zikto.ziktowalkprofiler.R;
 import com.zikto.invensense.BluetoothModule;
 import com.zikto.invensense.utils.PacketParser;
 import com.zikto.utils.server.ServerTools;
 //import com.example.bttest.R;
-
-
-
-
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -70,6 +64,7 @@ public class MainActivity extends Activity {
 
 		final Button startbutton = (Button)findViewById(R.id.startbtn);
 		final Button connectButoon = (Button)findViewById(R.id.connectButton);
+		final Button sendButton = (Button)findViewById(R.id.sendButton);
 
 		XYPlot plot;
 		//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
@@ -86,7 +81,15 @@ public class MainActivity extends Activity {
 
 
 		//DEBUG
+		sendButton.setOnClickListener(new Button.OnClickListener(){
 
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				sendData();
+			}
+			
+		});
 
 		connectButoon.setOnClickListener(new Button.OnClickListener(){
 
@@ -102,59 +105,12 @@ public class MainActivity extends Activity {
 
 			@SuppressLint("SimpleDateFormat")
 			public void onClick(View v) {
-				EditText edit=(EditText)findViewById(R.id.editText1);
-				String filename = edit.getText().toString();
-				if(filename=="")
-				{
-					filename="default";
-				}
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-				String currentDateandTime = sdf.format(new Date());
 				
-				filename = filename+currentDateandTime+".csv";
 
 				if(isStart)
 				{
 					stopPhoneSensor();
 					startbutton.setText("Start Tracking");
-					String message = "";
-
-					ArrayList<Float> walkList = plotManager.getMagList();
-
-					for(float value  : walkList)
-					{
-						message=message+","+value;
-					}
-					String state = Environment.getExternalStorageState();
-					if (Environment.MEDIA_MOUNTED.equals(state)) {
-
-						try {
-							//
-							//This will get the SD Card directory and create a folder named MyFiles in it.
-							File sdCard = Environment.getExternalStorageDirectory();
-							File directory = new File (sdCard.getAbsolutePath() + "/zikto");
-							directory.mkdirs();
-
-							//Now create the file in the above directory and write the contents into it
-							File file = new File(directory, filename);
-							FileOutputStream fOut = new FileOutputStream(file);
-							OutputStreamWriter osw = new OutputStreamWriter(fOut);
-							osw.write(message);
-							osw.flush();
-							osw.close();
-							int response = ServerTools.uploadFile(file.getAbsolutePath());
-							if(response == 200)
-								out.append("\nSending to server : SUCCESS!");
-							else
-								out.append("\nSending to server : FAIL");
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						} catch(IOException e) {
-							e.printStackTrace();
-						}
-
-					}
-
 				}
 				else
 				{
@@ -269,6 +225,57 @@ public class MainActivity extends Activity {
 	//	out.append("\n...In onDestroy()...");
 	}
 
+	public void sendData()
+	{
+		EditText edit=(EditText)findViewById(R.id.editText1);
+		String filename = edit.getText().toString();
+		if(filename=="")
+		{
+			filename="default";
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		String currentDateandTime = sdf.format(new Date());
+		
+		filename = filename+currentDateandTime+".csv";
+		String message = "";
+
+		ArrayList<Float> walkList = plotManager.getMagList();
+
+		for(float value  : walkList)
+		{
+			message=message+","+value;
+		}
+		String state = Environment.getExternalStorageState();
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+
+			try {
+				//
+				//This will get the SD Card directory and create a folder named MyFiles in it.
+				File sdCard = Environment.getExternalStorageDirectory();
+				File directory = new File (sdCard.getAbsolutePath() + "/zikto");
+				directory.mkdirs();
+
+				//Now create the file in the above directory and write the contents into it
+				File file = new File(directory, filename);
+				FileOutputStream fOut = new FileOutputStream(file);
+				OutputStreamWriter osw = new OutputStreamWriter(fOut);
+				osw.write(message);
+				osw.flush();
+				osw.close();
+				int response = ServerTools.uploadFile(file.getAbsolutePath());
+				if(response == 200)
+					out.append("\nSending to server : SUCCESS!");
+				else
+					out.append("\nSending to server : FAIL");
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+	}
 
 	public void AlertBox( String title, String message ){
 		new AlertDialog.Builder(this)

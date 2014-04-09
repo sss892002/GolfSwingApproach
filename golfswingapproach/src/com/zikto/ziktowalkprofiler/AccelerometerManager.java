@@ -65,6 +65,7 @@ public class AccelerometerManager implements SensorEventListener{
 	
 	public void start()
 	{
+		plotManager.clear();
         mSensorManager.registerListener(this, mAccelerometer, RATE);
 	}
 	
