@@ -62,14 +62,13 @@ public class MainActivity extends Activity {
 
 		StrictMode.setThreadPolicy(policy); 
 
-		mheadtext = (TextView)findViewById(R.id.headtext);
+		//mheadtext = (TextView)findViewById(R.id.headtext);
 
-		RadioGroup mrgroup = (RadioGroup)findViewById(R.id.rgroup);
-		mrgroup.setOnCheckedChangeListener(mRadioCheck);
-
+		//RadioGroup mrgroup = (RadioGroup)findViewById(R.id.rgroup);
+		
 
 		final Button startbutton = (Button)findViewById(R.id.startbtn);
-		final Button connectButoon = (Button)findViewById(R.id.connectButton);
+//		final Button connectButoon = (Button)findViewById(R.id.connectButton);
 		final Button sendButton = (Button)findViewById(R.id.sendButton);
 
 		XYPlot plot;
@@ -95,15 +94,6 @@ public class MainActivity extends Activity {
 				sendData();
 			}
 			
-		});
-
-		connectButoon.setOnClickListener(new Button.OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				plotManager.clear();				
-			}
-
 		});
 
 
@@ -135,29 +125,7 @@ public class MainActivity extends Activity {
 		//
 	}
 
-	RadioGroup.OnCheckedChangeListener mRadioCheck = new RadioGroup.OnCheckedChangeListener() {
-		public void onCheckedChanged(RadioGroup group, int checkedId) {
-			if (group.getId()==R.id.rgroup) {
 
-				//plotManager.clear();
-				switch (checkedId) 
-				{
-
-				case R.id.phonebtn:
-					// Put phoneBluetooth Module Here
-					Toast.makeText(MainActivity.this,"Phone Sensor Selected",Toast.LENGTH_SHORT).show();
-					stopInvensenseSensor();
-					startPhoneSensor();
-					break;
-				case R.id.invensensebtn:
-					Toast.makeText(MainActivity.this,"Invensense Sensor Selected",Toast.LENGTH_SHORT).show();
-					stopPhoneSensor();
-					startInvensenseSensor();
-					break;
-				}
-			}
-		}
-	};
 
 
 	public void checkBTState()
