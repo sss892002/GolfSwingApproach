@@ -19,21 +19,15 @@ import java.util.Date;
 import com.androidplot.xy.XYPlot;
 import com.zikto.ziktowalkprofiler.R;
 import com.zikto.invensense.BluetoothModule;
-import com.zikto.invensense.utils.PacketParser;
 import com.zikto.utils.server.ServerTools;
-//import com.example.bttest.R;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,8 +36,6 @@ import android.content.DialogInterface.OnClickListener;
 
 
 public class MainActivity extends Activity {
-
-	private TextView mheadtext;
 	private TextView out;
 	private AccelerometerManager accelManager;
 	private InvensenseManager invenManager;
@@ -58,9 +50,9 @@ public class MainActivity extends Activity {
 
 		setContentView(R.layout.activity_main);
 		
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-
-		StrictMode.setThreadPolicy(policy); 
+//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//
+//		StrictMode.setThreadPolicy(policy); 
 
 		//mheadtext = (TextView)findViewById(R.id.headtext);
 
@@ -90,7 +82,6 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				sendData();
 			}
 			
@@ -237,10 +228,10 @@ public class MainActivity extends Activity {
 				osw.flush();
 				osw.close();
 				int response = ServerTools.uploadFile(file.getAbsolutePath());
-				if(response == 200)
-					out.append("\nSending to server : SUCCESS!");
-				else
-					out.append("\nSending to server : FAIL");
+//				if(response == 200)
+//					out.append("\nSending to server : SUCCESS!");
+//				else
+//					out.append("\nSending to server : FAIL");
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch(IOException e) {
