@@ -97,12 +97,14 @@ public class MainActivity extends Activity {
 				if(isStart)
 				{
 					stopPhoneSensor();
-					startbutton.setText("Start Tracking");
+					//startbutton.setText("Start Tracking");
+					startbutton.setBackgroundResource(R.drawable.buttonstart);
 				}
 				else
 				{
 					startPhoneSensor();
-					startbutton.setText("Stop Tracking");
+					//startbutton.setText("Stop Tracking");
+					startbutton.setBackgroundResource(R.drawable.buttonstop);
 				}
 				isStart = !isStart;
 			}
