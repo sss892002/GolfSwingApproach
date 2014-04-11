@@ -38,8 +38,12 @@ import android.content.DialogInterface.OnClickListener;
 public class MainActivity extends Activity {
 	private TextView out;
 	private AccelerometerManager accelManager;
+	private ThreeAxisAccelManager threeAccelManager;
+	
 	private InvensenseManager invenManager;
 	private PlotManager plotManager;
+	private PlotManager subplot1Manager;
+	private PlotManager subplot2Manager;
 	private boolean isStart=false;
 
 	public void onCreate(Bundle savedInstanceState){
@@ -64,18 +68,21 @@ public class MainActivity extends Activity {
 		final Button sendButton = (Button)findViewById(R.id.sendButton);
 
 		XYPlot plot;
+		XYPlot subPlot1;
+		XYPlot subPlot2;
 		//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
 		/** Called when the activity is first created. */
 
-
 		out = (TextView) findViewById(R.id.out);
 		plot = (XYPlot) findViewById(R.id.mainPlot);
-
-		out.append("ZIKTO, Ready...");
+		subPlot1 = (XYPlot) findViewById(R.id.subPlot1);
+		subPlot2 = (XYPlot) findViewById(R.id.subPlot2);
+		
+		out.append("Ready...");
 
 		plotManager = new PlotManager(plot);
-
-
+		subplot1Manager = new PlotManager(subPlot1);
+		subplot2Manager = new PlotManager(subPlot2);
 
 		//DEBUG
 		sendButton.setOnClickListener(new Button.OnClickListener(){
@@ -87,7 +94,6 @@ public class MainActivity extends Activity {
 			
 		});
 
-
 		startbutton.setOnClickListener(new Button.OnClickListener() {
 
 			@SuppressLint("SimpleDateFormat")
@@ -97,30 +103,17 @@ public class MainActivity extends Activity {
 				if(isStart)
 				{
 					stopPhoneSensor();
-					//startbutton.setText("Start Tracking");
 					startbutton.setBackgroundResource(R.drawable.buttonstart);
 				}
 				else
 				{
 					startPhoneSensor();
-					//startbutton.setText("Stop Tracking");
 					startbutton.setBackgroundResource(R.drawable.buttonstop);
 				}
 				isStart = !isStart;
 			}
-
 		});
-
-		//DEBUG
-		//startPhoneSensor();
-		//startInvensenseSensor();
-
-		//
 	}
-
-
-
-
 	public void checkBTState()
 	{
 		if(!BluetoothModule.getInstance().isReady())
@@ -135,15 +128,22 @@ public class MainActivity extends Activity {
 	public void startPhoneSensor()
 	{
 		//Accelerometer Manager
-		accelManager = new AccelerometerManager(this, plotManager);
-		accelManager.start();
+//		accelManager = new AccelerometerManager(this, plotManager);
+//		accelManager.start();
+		threeAccelManager = new ThreeAxisAccelManager(this, plotManager, subplot1Manager, subplot2Manager);
+		threeAccelManager.start();
 	}
 
 	public void stopPhoneSensor()
 	{
-		if(accelManager != null)
+//		if(accelManager != null)
+//		{
+//			accelManager.stop();
+//		}
+		
+		if(threeAccelManager != null)
 		{
-			accelManager.stop();
+			threeAccelManager.stop();
 		}
 	}
 

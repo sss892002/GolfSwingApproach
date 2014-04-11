@@ -29,7 +29,7 @@ public class PlotManager {
 		plot.addSeries(magSeries, magFormat);
 		plot.setTicksPerRangeLabel(3);
 		plot.getGraphWidget().setDomainLabelOrientation(-45);
-		plot.setRangeBoundaries(0,30, BoundaryMode.FIXED);
+		plot.setRangeBoundaries(0,30, BoundaryMode.AUTO);
 		plot.setDomainBoundaries(0, DISPLAY_SIZE, BoundaryMode.FIXED);
 	}
 

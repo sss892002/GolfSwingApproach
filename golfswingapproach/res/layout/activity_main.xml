@@ -30,35 +30,50 @@
 
         <Button
             android:id="@+id/startbtn"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/buttonstart"
-            style="?android:attr/borderlessButtonStyle" />
+            android:background="@drawable/buttonstart" />
 
         <Button
             android:id="@+id/sendButton"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/buttonsend"
-            style="?android:attr/borderlessButtonStyle" />
-
+            android:background="@drawable/buttonsend" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/out"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
         android:textColor="#aaaaaa"
-        android:textSize="18sp"
-        />
+        android:textSize="18sp" />
 
     <com.androidplot.xy.XYPlot
         android:id="@+id/mainPlot"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginLeft="10px"
-        android:layout_marginRight="10px"
-        android:layout_marginTop="10px"
+        android:layout_height="150dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        title="A Simple XYPlot Example" />
+
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/subPlot1"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        title="A Simple XYPlot Example" />
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/subPlot2"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
         title="A Simple XYPlot Example" />
 
 </LinearLayout>
