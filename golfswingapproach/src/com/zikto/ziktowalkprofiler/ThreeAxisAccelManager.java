@@ -41,26 +41,12 @@ public class ThreeAxisAccelManager implements SensorEventListener {
 	}
 
 	@Override
-	public void onSensorChanged(SensorEvent event) {
-
-
+	public void onSensorChanged(SensorEvent event) 
+	{
 		for(int i = 0 ; i < 3; i ++)
 		{
 			plotManager[i].addValue(event.values[i]);
-
-			//			if (!mInitialized) {
-			//				mLastMag[i] = event.values[i]
-			//				mInitialized = true;
-			//			} else {
-			//				
-			//				float deltaMag = Math.abs(mLastMag[i] - event.values[i]);
-			//				if (deltaMag < NOISE) deltaMag = (float)0.0;
-			//					deltaMag = ;
-			//				
-			//				//tvX.setText(Float.toString(deltaX));
-			//			}
 		}
-
 	}
 
 

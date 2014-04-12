@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.Callable;
 
 import com.androidplot.xy.XYPlot;
 import com.zikto.ziktowalkprofiler.R;
@@ -35,7 +36,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity  {
 	private TextView out;
 	private AccelerometerManager accelManager;
 	private ThreeAxisAccelManager threeAccelManager;
@@ -206,12 +207,28 @@ public class MainActivity extends Activity {
 		filename = filename+currentDateandTime+".csv";
 		String message = "";
 
-		ArrayList<Float> walkList = plotManager.getMagList();
+		ArrayList<Float> walkList1 = plotManager.getMagList();
+		ArrayList<Float> walkList2 = subplot1Manager.getMagList();
+		ArrayList<Float> walkList3 = subplot2Manager.getMagList();
 
-		for(float value  : walkList)
+		for(float value  : walkList1)
 		{
 			message=message+","+value;
 		}
+		message = message+"\n";
+		
+		for(float value  : walkList2)
+		{
+			message=message+","+value;
+		}
+		message = message+"\n";
+		
+		for(float value  : walkList3)
+		{
+			message=message+","+value;
+		}
+		message = message+"\n";
+		
 		String state = Environment.getExternalStorageState();
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 
@@ -230,10 +247,7 @@ public class MainActivity extends Activity {
 				osw.flush();
 				osw.close();
 				int response = ServerTools.uploadFile(file.getAbsolutePath());
-//				if(response == 200)
-//					out.append("\nSending to server : SUCCESS!");
-//				else
-//					out.append("\nSending to server : FAIL");
+
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch(IOException e) {
@@ -242,6 +256,14 @@ public class MainActivity extends Activity {
 
 		}
 
+	}
+	
+	public void DisplayServerMessage(Long response)
+	{
+		if(response == 200)
+			out.append("\nSending to server : SUCCESS!");
+		else
+			out.append("\nSending to server : FAIL");
 	}
 
 	public void AlertBox( String title, String message ){
@@ -280,6 +302,7 @@ public class MainActivity extends Activity {
 			}
 		}
 	};
+
 }
 
 

@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Callable;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,8 +18,16 @@ public class ServerTools {
 
 
 		class SendingThread extends AsyncTask<String, Integer, Long>
-		{
-
+		{	
+			@Override
+			protected void onPostExecute(Long result)
+			{
+				super.onPostExecute(result);
+			//Debug Purpose Function
+				Log.d("Sending","result : " + result);
+			}
+			
+			
 			@Override
 			protected Long doInBackground(String... urls) {
 				String upLoadServerUri = "http://www.zikto.com/gait/upload.php";
@@ -129,12 +138,14 @@ public class ServerTools {
 								+ e.getMessage(), e);  
 					}   
 				}
+								
 				return (long)serverResponseCode;
 
 
 			};
 	
 		} // End else block
+
 		new SendingThread().execute(sourceFileUri);
 		return 0;
 	} 
