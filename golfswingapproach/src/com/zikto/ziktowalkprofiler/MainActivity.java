@@ -46,6 +46,7 @@ public class MainActivity extends Activity  {
 	private PlotManager subplot1Manager;
 	private PlotManager subplot2Manager;
 	private boolean isStart=false;
+	private AsyncUploadFile sendingManager;
 
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -114,6 +115,8 @@ public class MainActivity extends Activity  {
 				isStart = !isStart;
 			}
 		});
+		
+		sendingManager = new AsyncUploadFile(this);
 	}
 	public void checkBTState()
 	{
@@ -193,6 +196,7 @@ public class MainActivity extends Activity  {
 	//	out.append("\n...In onDestroy()...");
 	}
 
+	@SuppressLint("SimpleDateFormat")
 	public void sendData()
 	{
 		EditText edit=(EditText)findViewById(R.id.editText1);
@@ -246,7 +250,8 @@ public class MainActivity extends Activity  {
 				osw.write(message);
 				osw.flush();
 				osw.close();
-				int response = ServerTools.uploadFile(file.getAbsolutePath());
+				//int response = ServerTools.uploadFile(file.getAbsolutePath());
+				sendingManager.execute(file.getAbsolutePath());
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();

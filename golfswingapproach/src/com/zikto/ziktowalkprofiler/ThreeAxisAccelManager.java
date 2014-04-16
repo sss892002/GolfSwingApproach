@@ -31,7 +31,8 @@ public class ThreeAxisAccelManager implements SensorEventListener {
 		this.plotManager[2] = plotManager3;
 
 		mSensorManager = (SensorManager) this.activity.getSystemService(Context.SENSOR_SERVICE);
-		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 	}
 
 	@Override
