@@ -40,6 +40,7 @@ public class MainActivity extends Activity  {
 	private TextView out;
 	private AccelerometerManager accelManager;
 	private ThreeAxisAccelManager threeAccelManager;
+	private UniversalSensorManager universalManager;
 	
 	private InvensenseManager invenManager;
 	private PlotManager plotManager;
@@ -134,8 +135,13 @@ public class MainActivity extends Activity  {
 		//Accelerometer Manager
 //		accelManager = new AccelerometerManager(this, plotManager);
 //		accelManager.start();
-		threeAccelManager = new ThreeAxisAccelManager(this, plotManager, subplot1Manager, subplot2Manager);
-		threeAccelManager.start();
+//		threeAccelManager = new ThreeAxisAccelManager(this, plotManager, subplot1Manager, subplot2Manager);
+//		threeAccelManager.start();
+		if( universalManager == null)
+		{
+			universalManager = new UniversalSensorManager(this);
+			universalManager.start();
+		}
 	}
 
 	public void stopPhoneSensor()
@@ -145,10 +151,15 @@ public class MainActivity extends Activity  {
 //			accelManager.stop();
 //		}
 		
-		if(threeAccelManager != null)
+//		if(threeAccelManager != null)
+//		{
+//			threeAccelManager.stop();
+//		}
+		if(universalManager != null)
 		{
-			threeAccelManager.stop();
+			universalManager.stop();
 		}
+		
 	}
 
 	public void startInvensenseSensor()

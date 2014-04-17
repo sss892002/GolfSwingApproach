@@ -48,6 +48,8 @@ public class PlotManager {
 		magSeries.addLast(null, value);
 		plot.redraw();
 	}
+	
+	
 
 	public void clear()
 	{
