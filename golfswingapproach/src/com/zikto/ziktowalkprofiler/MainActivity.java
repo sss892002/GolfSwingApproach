@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import com.androidplot.xy.XYPlot;
@@ -24,6 +25,7 @@ import com.zikto.utils.server.ServerTools;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -34,6 +36,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.hardware.Sensor;
 
 
 public class MainActivity extends Activity  {
@@ -132,16 +135,18 @@ public class MainActivity extends Activity  {
 
 	public void startPhoneSensor()
 	{
-		//Accelerometer Manager
+//Accelerometer Manager
 //		accelManager = new AccelerometerManager(this, plotManager);
 //		accelManager.start();
 //		threeAccelManager = new ThreeAxisAccelManager(this, plotManager, subplot1Manager, subplot2Manager);
 //		threeAccelManager.start();
 		if( universalManager == null)
 		{
-			universalManager = new UniversalSensorManager(this);
-			universalManager.start();
+			universalManager = new UniversalSensorManager(this,plotManager,subplot1Manager,subplot2Manager);
+			
 		}
+		universalManager.start();
+		universalManager.draw(Sensor.TYPE_ROTATION_VECTOR);
 	}
 
 	public void stopPhoneSensor()
@@ -221,28 +226,47 @@ public class MainActivity extends Activity  {
 		
 		filename = filename+currentDateandTime+".csv";
 		String message = "";
-
-		ArrayList<Float> walkList1 = plotManager.getMagList();
-		ArrayList<Float> walkList2 = subplot1Manager.getMagList();
-		ArrayList<Float> walkList3 = subplot2Manager.getMagList();
-
-		for(float value  : walkList1)
-		{
-			message=message+","+value;
-		}
-		message = message+"\n";
 		
-		for(float value  : walkList2)
+		ArrayList<LinkedList<Float>> sensorData = new ArrayList<LinkedList<Float>>();
+		ArrayList<LinkedList<Long>> timeStamps = new ArrayList<LinkedList<Long>>();
+		for(int i = 0 ; i < 3 ; i ++)
 		{
-			message=message+","+value;
+			sensorData.add(universalManager.getAccelData(i));
 		}
-		message = message+"\n";
+		for(int i = 0 ; i < 3 ; i ++)
+		{
+			sensorData.add(universalManager.getGyroData(i));
+		}
+		for(int i = 0 ; i < 3 ; i ++)
+		{
+			sensorData.add(universalManager.getRotationData(i));
+		}
 		
-		for(float value  : walkList3)
+		timeStamps.add(universalManager.getAccelTime());
+		timeStamps.add(universalManager.getGyroTime());
+		timeStamps.add(universalManager.getRotationTime());
+		
+		StringBuilder buffer = new StringBuilder();
+		
+		for( LinkedList<Float> list : sensorData)
 		{
-			message=message+","+value;
+			for( Float value : list)
+			{
+				buffer.append( ","+value);
+			}
+			buffer.append("\n");
 		}
-		message = message+"\n";
+		
+		for( LinkedList<Long> list : timeStamps)
+		{
+			for( Long value : list)
+			{
+				buffer.append( ","+value);
+			}
+			buffer.append("\n");
+		}
+		
+		message = buffer.toString();
 		
 		String state = Environment.getExternalStorageState();
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -262,11 +286,14 @@ public class MainActivity extends Activity  {
 				osw.flush();
 				osw.close();
 				//int response = ServerTools.uploadFile(file.getAbsolutePath());
-				sendingManager.execute(file.getAbsolutePath());
+				new AsyncUploadFile(this).execute(file.getAbsolutePath());
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch(IOException e) {
+				e.printStackTrace();
+			} catch(Exception e)
+			{
 				e.printStackTrace();
 			}
 

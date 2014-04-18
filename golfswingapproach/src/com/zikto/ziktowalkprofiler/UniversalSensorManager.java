@@ -19,19 +19,27 @@ public class UniversalSensorManager implements SensorEventListener {
 	
 	private Sensor accelrometer;
 	private ArrayList<LinkedList<Float>> accelList = new ArrayList<LinkedList<Float>>();
+	private LinkedList<Long >accelTime = new LinkedList<Long>(); 
 	private Sensor gyroscope;
 	private ArrayList<LinkedList<Float>> gyroList = new ArrayList<LinkedList<Float>>();
+	private LinkedList<Long > gyroTime = new LinkedList<Long>();
 	private Sensor rotationvector;
 	private ArrayList<LinkedList<Float>> rotationList = new ArrayList<LinkedList<Float>>();
+	private LinkedList<Long >rotationTime = new LinkedList<Long>();
+	private ArrayList<PlotManager> plotList = new ArrayList<PlotManager>();
 	
-	public UniversalSensorManager(Activity activity)
+	private int drawingPlot=0;
+	
+	public UniversalSensorManager(Activity activity, PlotManager plot1, PlotManager plot2 , PlotManager plot3)
 	{
 		sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
 		accelrometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 		rotationvector = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 		
-		
+		plotList.add(plot1);
+		plotList.add(plot2);
+		plotList.add(plot3);
 	}
 	
 	@Override
@@ -57,33 +65,54 @@ public class UniversalSensorManager implements SensorEventListener {
 //			Log.d("Sensor", "Rot Vec " + event.values[0] + " " +event.values[1]+" "+event.values[2]);
 //		}
 //		
-//		Log.d("Sensor","Time " + event.timestamp);
+		
+		
+		int resolution = 50000;
 		
 		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
 		{
 			for(int i = 0 ; i < 3; i++)
 			{
 				accelList.get(i).add( event.values[i]);
+				if( drawingPlot == Sensor.TYPE_ACCELEROMETER )
+				{
+					plotList.get(i).addValue(event.values[i]);
+				}
 			}
-			accelList.get(3).add((float)event.timestamp);
+			accelTime.add(event.timestamp);
 		}
 		else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE)
 		{
 			for(int i = 0 ; i < 3; i++)
 			{
 				gyroList.get(i).add( event.values[i]);
+				if( drawingPlot == Sensor.TYPE_GYROSCOPE )
+				{
+					plotList.get(i).addValue(event.values[i]);
+				}
 			}
-			gyroList.get(3).add((float)event.timestamp);	
+			gyroTime.add(event.timestamp);
 		}
 		else if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR)
 		{
 			for(int i = 0 ; i < 3; i++)
 			{
 				rotationList.get(i).add(event.values[i]);
+				if( drawingPlot == Sensor.TYPE_ROTATION_VECTOR )
+				{
+					plotList.get(i).addValue(event.values[i]);
+				}
 			}
-			rotationList.get(3).add((float)event.timestamp);
+			rotationTime.add(event.timestamp);
 		}
 	}
+	
+	public void draw(int i )
+	{
+		drawingPlot = i;
+	}
+	
+	//Getters
 	
 	public LinkedList<Float> getAccelData(int index)
 	{
@@ -98,6 +127,19 @@ public class UniversalSensorManager implements SensorEventListener {
 		return rotationList.get(index);
 	}
 	
+	public LinkedList<Long> getAccelTime()
+	{
+		return accelTime;
+	}
+	public LinkedList<Long> getGyroTime()
+	{
+		return gyroTime;
+	}
+	public LinkedList<Long> getRotationTime()
+	{
+		return rotationTime;
+	}
+	
 	public void start()
 	{
 		sensorManager.registerListener(this, accelrometer, RATE);
@@ -107,18 +149,23 @@ public class UniversalSensorManager implements SensorEventListener {
 		accelList.clear();
 		gyroList.clear();
 		rotationList.clear();
+		accelTime.clear();
+		gyroTime.clear();
+		rotationTime.clear();
 		
-		for(int i = 0  ; i < 4 ; i++) //  
+		for(int i = 0  ; i < 3 ; i++) //  
 		{
 			accelList.add(new LinkedList<Float>());
 			gyroList.add(new LinkedList<Float>());
 			rotationList.add(new LinkedList<Float>());
+			plotList.get(i).clear();
 		}
 	}
 	
 	public void stop()
 	{
 		sensorManager.unregisterListener(this);
+		
 	}
 
 }

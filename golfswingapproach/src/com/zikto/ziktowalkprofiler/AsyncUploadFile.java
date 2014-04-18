@@ -26,6 +26,12 @@ public class AsyncUploadFile extends AsyncTask<String, Integer, Long> {
 	{
 		activity.DisplayServerMessage(result);
 	}
+	
+	@Override
+	protected void onCancelled()
+	{
+		
+	}
 
 	@Override
 	protected Long doInBackground(String... urls) {
@@ -49,21 +55,7 @@ public class AsyncUploadFile extends AsyncTask<String, Integer, Long> {
 		File sourceFile = new File(fileName); 
 
 		if (!sourceFile.isFile()) {
-
-			//dialog.dismiss(); 
-
 			Log.e("uploadFile", "Source File not exist :");
-
-			//					+uploadFilePath + "" + uploadFileName);
-			//
-			//			runOnUiThread(new Runnable() {
-			//				public void run() {
-			//					messageText.setText("Source File not exist :"
-			//							+uploadFilePath + "" + uploadFileName);
-			//				}
-			//			}); 
-
-
 		}
 		else
 		{
@@ -107,6 +99,7 @@ public class AsyncUploadFile extends AsyncTask<String, Integer, Long> {
 					bytesAvailable = fileInputStream.available();
 					bufferSize = Math.min(bytesAvailable, maxBufferSize);
 					bytesRead = fileInputStream.read(buffer, 0, bufferSize);   
+					
 				}
 
 				// send multipart form data necesssary after file data...
@@ -119,7 +112,6 @@ public class AsyncUploadFile extends AsyncTask<String, Integer, Long> {
 
 				Log.i("uploadFile", "HTTP Response is : "
 						+ serverResponseMessage + ": " + serverResponseCode);
-
 
 				//close the streams //
 				fileInputStream.close();
