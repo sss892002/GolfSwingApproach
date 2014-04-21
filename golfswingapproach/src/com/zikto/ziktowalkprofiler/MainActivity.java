@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 import com.androidplot.xy.XYPlot;
 import com.zikto.ziktowalkprofiler.R;
 import com.zikto.invensense.BluetoothModule;
+import com.zikto.utils.server.MultitouchPlot;
 import com.zikto.utils.server.ServerTools;
 
 import android.bluetooth.BluetoothAdapter;

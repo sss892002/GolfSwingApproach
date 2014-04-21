@@ -9,11 +9,15 @@ import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
+import com.zikto.utils.server.MultitouchPlot;
 
 public class PlotManager {
 	private static final int DISPLAY_SIZE = 500; 
 	private static final int HISTORY_SIZE = 30000; 
+	
+	
 	private XYPlot plot;
+	
 	private SimpleXYSeries magSeries = null; ///Acceleration Magnitude Series
 	private ArrayList<Float> magList = new ArrayList<Float>();
 	
