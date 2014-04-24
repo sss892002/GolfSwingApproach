@@ -15,40 +15,45 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.concurrent.Callable;
 
 import com.androidplot.xy.XYPlot;
 import com.zikto.ziktowalkprofiler.R;
 import com.zikto.invensense.BluetoothModule;
-import com.zikto.invensense.utils.PacketParser;
+import com.zikto.utils.server.MultitouchPlot;
 import com.zikto.utils.server.ServerTools;
-//import com.example.bttest.R;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.hardware.Sensor;
 
 
-public class MainActivity extends Activity {
-
-	private TextView mheadtext;
+public class MainActivity extends Activity  {
 	private TextView out;
 	private AccelerometerManager accelManager;
+	private ThreeAxisAccelManager threeAccelManager;
+	private UniversalSensorManager universalManager;
+	
 	private InvensenseManager invenManager;
 	private PlotManager plotManager;
+	private PlotManager subplot1Manager;
+	private PlotManager subplot2Manager;
 	private boolean isStart=false;
+	private AsyncUploadFile sendingManager;
 
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -58,54 +63,45 @@ public class MainActivity extends Activity {
 
 		setContentView(R.layout.activity_main);
 		
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//
+//		StrictMode.setThreadPolicy(policy); 
 
-		StrictMode.setThreadPolicy(policy); 
+		//mheadtext = (TextView)findViewById(R.id.headtext);
 
-		mheadtext = (TextView)findViewById(R.id.headtext);
-
-		RadioGroup mrgroup = (RadioGroup)findViewById(R.id.rgroup);
-		mrgroup.setOnCheckedChangeListener(mRadioCheck);
-
+		//RadioGroup mrgroup = (RadioGroup)findViewById(R.id.rgroup);
+		
 
 		final Button startbutton = (Button)findViewById(R.id.startbtn);
-		final Button connectButoon = (Button)findViewById(R.id.connectButton);
+//		final Button connectButoon = (Button)findViewById(R.id.connectButton);
 		final Button sendButton = (Button)findViewById(R.id.sendButton);
 
 		XYPlot plot;
+		XYPlot subPlot1;
+		XYPlot subPlot2;
 		//	private final ListAdapter mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.id.new_devices);
 		/** Called when the activity is first created. */
 
-
 		out = (TextView) findViewById(R.id.out);
 		plot = (XYPlot) findViewById(R.id.mainPlot);
-
-		out.append("ZIKTO, Ready...");
+		subPlot1 = (XYPlot) findViewById(R.id.subPlot1);
+		subPlot2 = (XYPlot) findViewById(R.id.subPlot2);
+		
+		out.append("Ready...");
 
 		plotManager = new PlotManager(plot);
-
-
+		subplot1Manager = new PlotManager(subPlot1);
+		subplot2Manager = new PlotManager(subPlot2);
 
 		//DEBUG
 		sendButton.setOnClickListener(new Button.OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				sendData();
 			}
 			
 		});
-
-		connectButoon.setOnClickListener(new Button.OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				plotManager.clear();				
-			}
-
-		});
-
 
 		startbutton.setOnClickListener(new Button.OnClickListener() {
 
@@ -116,50 +112,19 @@ public class MainActivity extends Activity {
 				if(isStart)
 				{
 					stopPhoneSensor();
-					startbutton.setText("Start Tracking");
+					startbutton.setBackgroundResource(R.drawable.buttonstart);
 				}
 				else
 				{
 					startPhoneSensor();
-					startbutton.setText("Stop Tracking");
+					startbutton.setBackgroundResource(R.drawable.buttonstop);
 				}
 				isStart = !isStart;
 			}
-
 		});
-
-		//DEBUG
-		//startPhoneSensor();
-		//startInvensenseSensor();
-
-		//
+		
+		sendingManager = new AsyncUploadFile(this);
 	}
-
-	RadioGroup.OnCheckedChangeListener mRadioCheck = new RadioGroup.OnCheckedChangeListener() {
-		public void onCheckedChanged(RadioGroup group, int checkedId) {
-			if (group.getId()==R.id.rgroup) {
-
-				//plotManager.clear();
-				switch (checkedId) 
-				{
-
-				case R.id.phonebtn:
-					// Put phoneBluetooth Module Here
-					Toast.makeText(MainActivity.this,"Phone Sensor Selected",Toast.LENGTH_SHORT).show();
-					stopInvensenseSensor();
-					startPhoneSensor();
-					break;
-				case R.id.invensensebtn:
-					Toast.makeText(MainActivity.this,"Invensense Sensor Selected",Toast.LENGTH_SHORT).show();
-					stopPhoneSensor();
-					startInvensenseSensor();
-					break;
-				}
-			}
-		}
-	};
-
-
 	public void checkBTState()
 	{
 		if(!BluetoothModule.getInstance().isReady())
@@ -173,17 +138,36 @@ public class MainActivity extends Activity {
 
 	public void startPhoneSensor()
 	{
-		//Accelerometer Manager
-		accelManager = new AccelerometerManager(this, plotManager);
-		accelManager.start();
+//Accelerometer Manager
+//		accelManager = new AccelerometerManager(this, plotManager);
+//		accelManager.start();
+//		threeAccelManager = new ThreeAxisAccelManager(this, plotManager, subplot1Manager, subplot2Manager);
+//		threeAccelManager.start();
+		if( universalManager == null)
+		{
+			universalManager = new UniversalSensorManager(this,plotManager,subplot1Manager,subplot2Manager);
+			
+		}
+		universalManager.start();
+		universalManager.draw(Sensor.TYPE_ROTATION_VECTOR);
 	}
 
 	public void stopPhoneSensor()
 	{
-		if(accelManager != null)
+//		if(accelManager != null)
+//		{
+//			accelManager.stop();
+//		}
+		
+//		if(threeAccelManager != null)
+//		{
+//			threeAccelManager.stop();
+//		}
+		if(universalManager != null)
 		{
-			accelManager.stop();
+			universalManager.stop();
 		}
+		
 	}
 
 	public void startInvensenseSensor()
@@ -231,10 +215,25 @@ public class MainActivity extends Activity {
 	//	out.append("\n...In onDestroy()...");
 	}
 
+	@SuppressLint("SimpleDateFormat")
 	public void sendData()
 	{
-		EditText edit=(EditText)findViewById(R.id.editText1);
-		String filename = edit.getText().toString();
+		final EditText editPelvic = (EditText)findViewById(R.id.editPelvic);
+		final EditText editComment = (EditText)findViewById(R.id.editComments);
+		final EditText editAge  = (EditText)findViewById(R.id.editAge);
+		final EditText editWeight  = (EditText)findViewById(R.id.editWeight);
+		final EditText editHeight  = (EditText)findViewById(R.id.editHeight);
+		final EditText edit=(EditText)findViewById(R.id.editText1);
+		
+		String filename = edit.getText().toString(); 
+		String pelvicRotation = editPelvic.getText().toString();
+		String meta = editComment.getText().toString();
+		String age = editAge.getText().toString();
+		String height = editHeight.getText().toString();
+		String weight = editWeight.getText().toString();
+		
+		if(!ValidateInputs())return;
+		
 		if(filename=="")
 		{
 			filename="default";
@@ -244,13 +243,76 @@ public class MainActivity extends Activity {
 		
 		filename = filename+currentDateandTime+".csv";
 		String message = "";
-
-		ArrayList<Float> walkList = plotManager.getMagList();
-
-		for(float value  : walkList)
+		
+		ArrayList<LinkedList<Float>> sensorData = new ArrayList<LinkedList<Float>>();
+		ArrayList<LinkedList<Long>> timeStamps = new ArrayList<LinkedList<Long>>();
+		for(int i = 0 ; i < 3 ; i ++)
 		{
-			message=message+","+value;
+			sensorData.add(universalManager.getAccelData(i));
 		}
+		for(int i = 0 ; i < 3 ; i ++)
+		{
+			sensorData.add(universalManager.getGyroData(i));
+		}
+		for(int i = 0 ; i < 4 ; i ++)
+		{
+			sensorData.add(universalManager.getRotationData(i));
+		}
+		
+		timeStamps.add(universalManager.getAccelTime());
+		timeStamps.add(universalManager.getGyroTime());
+		timeStamps.add(universalManager.getRotationTime());
+		
+		StringBuilder buffer = new StringBuilder();
+		
+		//String Nickname, Gender, Device, Rotation, Meta, Position,Status,Age,weight,height
+		
+		String name = edit.getText().toString();
+		String gender,position;
+		final ToggleButton genderButton =  (ToggleButton)findViewById(R.id.genderButton);
+		if(genderButton.isChecked())
+		{
+			gender = "M";
+		}
+		else
+		{
+			gender = "F";
+		}
+		
+		final ToggleButton positionButton =  (ToggleButton)findViewById(R.id.handButton);
+		if(positionButton.isChecked())
+		{
+			position = "left_wrist";
+		}
+		else
+		{
+			position = "right_wrist";
+		}
+		
+		String device = "SmartPhone";
+		
+		for( LinkedList<Float> list : sensorData)
+		{
+			for( Float value : list)
+			{
+				buffer.append( ","+value);
+			}
+			buffer.append("\n");
+		}
+		
+		for( LinkedList<Long> list : timeStamps)
+		{
+			for( Long value : list)
+			{
+				buffer.append( ","+value);
+			}
+			buffer.append("\n");
+		}
+		
+		buffer.append(name+";"+gender+";"+device+";"+pelvicRotation+";"+meta+";"+position+";casual walking;"+age+";"+weight+";"+height+"\n");
+		
+		message = buffer.toString();
+		
 		String state = Environment.getExternalStorageState();
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 
@@ -268,30 +330,90 @@ public class MainActivity extends Activity {
 				osw.write(message);
 				osw.flush();
 				osw.close();
-				int response = ServerTools.uploadFile(file.getAbsolutePath());
-				if(response == 200)
-					out.append("\nSending to server : SUCCESS!");
-				else
-					out.append("\nSending to server : FAIL");
+				//int response = ServerTools.uploadFile(file.getAbsolutePath());
+				new AsyncUploadFile(this).execute(file.getAbsolutePath());
+
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch(IOException e) {
+				e.printStackTrace();
+			} catch(Exception e)
+			{
 				e.printStackTrace();
 			}
 
 		}
 
 	}
+	
+	public void DisplayServerMessage(Long response)
+	{
+		if(response == 200)
+			Toast.makeText(getApplicationContext(), (String)"Sending to server : SUCCESS!", 
+					   Toast.LENGTH_LONG).show();
+		else
+			Toast.makeText(getApplicationContext(), (String)"Sending to server : FAIL!", 
+					   Toast.LENGTH_LONG).show();
+	}
 
 	public void AlertBox( String title, String message ){
 		new AlertDialog.Builder(this)
 		.setTitle( title )
-		.setMessage( message + " Press OK to exit." )
-		.setPositiveButton("OK", new OnClickListener() {
-			public void onClick(DialogInterface arg0, int arg1) {
-				finish();
-			}
-		}).show();
+		.setMessage( message ).show();
+//		.setPositiveButton("OK", new OnClickListener() {
+//			public void onClick(DialogInterface arg0, int arg1) {
+//				finish();
+//			}
+//		}
+		
+	}
+	
+	public boolean ValidateInputs()
+	{
+		final EditText editPelvic = (EditText)findViewById(R.id.editPelvic);
+		final EditText editComment = (EditText)findViewById(R.id.editComments);
+		final EditText editAge  = (EditText)findViewById(R.id.editAge);
+		final EditText editWeight  = (EditText)findViewById(R.id.editWeight);
+		final EditText editHeight  = (EditText)findViewById(R.id.editHeight);
+		final EditText edit=(EditText)findViewById(R.id.editText1);
+		
+		String filename = edit.getText().toString(); 
+		String pelvicRotation = editPelvic.getText().toString();
+		String meta = editComment.getText().toString();
+		String age = editAge.getText().toString();
+		String height = editHeight.getText().toString();
+		String weight = editWeight.getText().toString();
+		
+		if(filename.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Name.");
+			return false;
+		}
+		
+		if(pelvicRotation.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Pelvic Rotation Data.");
+			return false;
+		}
+		
+		if(age.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Age.");
+			return false;
+		}
+		
+		if(weight.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Weight.");
+			return false;
+		}
+		if(height.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Height.");
+			return false;
+		}
+		
+		return true;
 	}
 
 	public final BroadcastReceiver mReciever = new BroadcastReceiver() {
@@ -319,6 +441,7 @@ public class MainActivity extends Activity {
 			}
 		}
 	};
+
 }
 
 
