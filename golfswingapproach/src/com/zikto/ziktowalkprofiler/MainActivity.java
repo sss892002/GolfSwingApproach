@@ -32,6 +32,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -216,8 +218,22 @@ public class MainActivity extends Activity  {
 	@SuppressLint("SimpleDateFormat")
 	public void sendData()
 	{
-		EditText edit=(EditText)findViewById(R.id.editText1);
-		String filename = edit.getText().toString();
+		final EditText editPelvic = (EditText)findViewById(R.id.editPelvic);
+		final EditText editComment = (EditText)findViewById(R.id.editComments);
+		final EditText editAge  = (EditText)findViewById(R.id.editAge);
+		final EditText editWeight  = (EditText)findViewById(R.id.editWeight);
+		final EditText editHeight  = (EditText)findViewById(R.id.editHeight);
+		final EditText edit=(EditText)findViewById(R.id.editText1);
+		
+		String filename = edit.getText().toString(); 
+		String pelvicRotation = editPelvic.getText().toString();
+		String meta = editComment.getText().toString();
+		String age = editAge.getText().toString();
+		String height = editHeight.getText().toString();
+		String weight = editWeight.getText().toString();
+		
+		if(!ValidateInputs())return;
+		
 		if(filename=="")
 		{
 			filename="default";
@@ -238,7 +254,7 @@ public class MainActivity extends Activity  {
 		{
 			sensorData.add(universalManager.getGyroData(i));
 		}
-		for(int i = 0 ; i < 3 ; i ++)
+		for(int i = 0 ; i < 4 ; i ++)
 		{
 			sensorData.add(universalManager.getRotationData(i));
 		}
@@ -248,6 +264,32 @@ public class MainActivity extends Activity  {
 		timeStamps.add(universalManager.getRotationTime());
 		
 		StringBuilder buffer = new StringBuilder();
+		
+		//String Nickname, Gender, Device, Rotation, Meta, Position,Status,Age,weight,height
+		
+		String name = edit.getText().toString();
+		String gender,position;
+		final ToggleButton genderButton =  (ToggleButton)findViewById(R.id.genderButton);
+		if(genderButton.isChecked())
+		{
+			gender = "M";
+		}
+		else
+		{
+			gender = "F";
+		}
+		
+		final ToggleButton positionButton =  (ToggleButton)findViewById(R.id.handButton);
+		if(positionButton.isChecked())
+		{
+			position = "left_wrist";
+		}
+		else
+		{
+			position = "right_wrist";
+		}
+		
+		String device = "SmartPhone";
 		
 		for( LinkedList<Float> list : sensorData)
 		{
@@ -266,6 +308,8 @@ public class MainActivity extends Activity  {
 			}
 			buffer.append("\n");
 		}
+		
+		buffer.append(name+";"+gender+";"+device+";"+pelvicRotation+";"+meta+";"+position+";casual walking;"+age+";"+weight+";"+height+"\n");
 		
 		message = buffer.toString();
 		
@@ -305,20 +349,71 @@ public class MainActivity extends Activity  {
 	public void DisplayServerMessage(Long response)
 	{
 		if(response == 200)
-			out.append("\nSending to server : SUCCESS!");
+			Toast.makeText(getApplicationContext(), (String)"Sending to server : SUCCESS!", 
+					   Toast.LENGTH_LONG).show();
 		else
-			out.append("\nSending to server : FAIL");
+			Toast.makeText(getApplicationContext(), (String)"Sending to server : FAIL!", 
+					   Toast.LENGTH_LONG).show();
 	}
 
 	public void AlertBox( String title, String message ){
 		new AlertDialog.Builder(this)
 		.setTitle( title )
-		.setMessage( message + " Press OK to exit." )
-		.setPositiveButton("OK", new OnClickListener() {
-			public void onClick(DialogInterface arg0, int arg1) {
-				finish();
-			}
-		}).show();
+		.setMessage( message ).show();
+//		.setPositiveButton("OK", new OnClickListener() {
+//			public void onClick(DialogInterface arg0, int arg1) {
+//				finish();
+//			}
+//		}
+		
+	}
+	
+	public boolean ValidateInputs()
+	{
+		final EditText editPelvic = (EditText)findViewById(R.id.editPelvic);
+		final EditText editComment = (EditText)findViewById(R.id.editComments);
+		final EditText editAge  = (EditText)findViewById(R.id.editAge);
+		final EditText editWeight  = (EditText)findViewById(R.id.editWeight);
+		final EditText editHeight  = (EditText)findViewById(R.id.editHeight);
+		final EditText edit=(EditText)findViewById(R.id.editText1);
+		
+		String filename = edit.getText().toString(); 
+		String pelvicRotation = editPelvic.getText().toString();
+		String meta = editComment.getText().toString();
+		String age = editAge.getText().toString();
+		String height = editHeight.getText().toString();
+		String weight = editWeight.getText().toString();
+		
+		if(filename.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Name.");
+			return false;
+		}
+		
+		if(pelvicRotation.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Pelvic Rotation Data.");
+			return false;
+		}
+		
+		if(age.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Age.");
+			return false;
+		}
+		
+		if(weight.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Weight.");
+			return false;
+		}
+		if(height.isEmpty())
+		{
+			AlertBox("Sorry", "Enter Height.");
+			return false;
+		}
+		
+		return true;
 	}
 
 	public final BroadcastReceiver mReciever = new BroadcastReceiver() {

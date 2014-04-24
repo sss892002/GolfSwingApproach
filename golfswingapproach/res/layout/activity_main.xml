@@ -4,13 +4,11 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/filename"
+    <ImageView
+        android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="User Name : "
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:src="@drawable/fpg" />
 
     <EditText
         android:id="@+id/editText1"
@@ -34,13 +32,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/buttonstart" />
-
-        <Button
-            android:id="@+id/sendButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/buttonsend" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,26 +39,27 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal" >
-        
+
         <ToggleButton
             android:id="@+id/genderButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textOn=""
-            android:textOff=""
+            android:background="@drawable/togglebuttongender"
+            android:layout_margin="10dp"
             android:text=""
-            android:background="@drawable/togglebuttongender" />
+            android:textOff=""
+            android:textOn="" />
 
         <ToggleButton
             android:id="@+id/handButton"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textOn=""
-            android:textOff=""
+            android:background="@drawable/togglebuttonhand"
             android:text=""
-            android:background="@drawable/togglebuttonhand" />
+            android:textOff=""
+            android:textOn="" />
     </LinearLayout>
 
     <TextView
@@ -77,6 +69,37 @@
         android:textColor="#aaaaaa"
         android:textSize="18sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+        
+         <EditText
+            android:id="@+id/editAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="4"
+            android:inputType="number"
+            android:hint="Age" />
+
+        <EditText
+            android:id="@+id/editWeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:hint="Weight in Kg" />
+
+        <EditText
+            android:id="@+id/editHeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            android:hint="Height in Cm" />
+    </LinearLayout>
+
     <com.androidplot.xy.XYPlot
         android:id="@+id/mainPlot"
         android:layout_width="fill_parent"
@@ -84,7 +107,8 @@
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
-        title="A Simple XYPlot Example" />
+        title="A Simple XYPlot Example"
+        android:visibility="gone" />
 
     <com.androidplot.xy.XYPlot
         android:id="@+id/subPlot1"
@@ -98,11 +122,39 @@
     <com.androidplot.xy.XYPlot
         android:id="@+id/subPlot2"
         android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        android:layout_height="match_parent"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
-        
-        title="A Simple XYPlot Example" />
+        title="A Simple XYPlot Example"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/editPelvic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Pelvic Rotation" />
+
+    <EditText
+        android:id="@+id/editComments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Comments" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/sendButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttonsend" />
+    </LinearLayout>
 
 </LinearLayout>

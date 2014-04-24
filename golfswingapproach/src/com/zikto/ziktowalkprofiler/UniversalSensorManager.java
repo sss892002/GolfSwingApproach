@@ -95,12 +95,13 @@ public class UniversalSensorManager implements SensorEventListener {
 		}
 		else if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR)
 		{
-			for(int i = 0 ; i < 3; i++)
+			for(int i = 0 ; i < 4; i++)
 			{
 				rotationList.get(i).add(event.values[i]);
 				if( drawingPlot == Sensor.TYPE_ROTATION_VECTOR )
 				{
-					plotList.get(i).addValue(event.values[i]);
+					if(i < 3)
+						plotList.get(i).addValue(event.values[i]);
 				}
 			}
 			rotationTime.add(event.timestamp);
@@ -160,6 +161,7 @@ public class UniversalSensorManager implements SensorEventListener {
 			rotationList.add(new LinkedList<Float>());
 			plotList.get(i).clear();
 		}
+		rotationList.add(new LinkedList<Float>());
 	}
 	
 	public void stop()
