@@ -27,8 +27,10 @@ import com.zikto.utils.server.ServerTools;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -42,7 +44,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.hardware.Sensor;
 
 
-public class MainActivity extends Activity  {
+public class MainActivity extends Activity {
 	private TextView out;
 	private AccelerometerManager accelManager;
 	private ThreeAxisAccelManager threeAccelManager;
@@ -112,12 +114,14 @@ public class MainActivity extends Activity  {
 				if(isStart)
 				{
 					stopPhoneSensor();
-					startbutton.setBackgroundResource(R.drawable.buttonstart);
+					startbutton.setText("Start Tracking");
+//					startbutton.setBackgroundResource(R.drawable.buttonstart);
 				}
 				else
 				{
 					startPhoneSensor();
-					startbutton.setBackgroundResource(R.drawable.buttonstop);
+					startbutton.setText("Stop Tracking");
+					//startbutton.setBackgroundResource(R.drawable.buttonstop);
 				}
 				isStart = !isStart;
 			}
@@ -185,6 +189,22 @@ public class MainActivity extends Activity  {
 		}
 	}
 
+	public void clearAllField()
+	{
+		final EditText editPelvic = (EditText)findViewById(R.id.editPelvic);
+		final EditText editComment = (EditText)findViewById(R.id.editComments);
+		final EditText editAge  = (EditText)findViewById(R.id.editAge);
+		final EditText editWeight  = (EditText)findViewById(R.id.editWeight);
+		final EditText editHeight  = (EditText)findViewById(R.id.editHeight);
+		final EditText edit=(EditText)findViewById(R.id.editText1);
+		
+		editPelvic.getText().clear();
+		editComment.getText().clear();
+		editAge.getText().clear();
+		editWeight.getText().clear();
+		editHeight.getText().clear();
+		edit.getText().clear();
+	}
 
 	@Override
 	public void onStart() {
@@ -441,6 +461,7 @@ public class MainActivity extends Activity  {
 			}
 		}
 	};
+
 
 }
 
