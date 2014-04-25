@@ -112,12 +112,14 @@ public class MainActivity extends Activity  {
 				if(isStart)
 				{
 					stopPhoneSensor();
-					startbutton.setBackgroundResource(R.drawable.buttonstart);
+					startbutton.setText("Start Tracking");
+//					startbutton.setBackgroundResource(R.drawable.buttonstart);
 				}
 				else
 				{
 					startPhoneSensor();
-					startbutton.setBackgroundResource(R.drawable.buttonstop);
+					startbutton.setText("Stop Tracking");
+					//startbutton.setBackgroundResource(R.drawable.buttonstop);
 				}
 				isStart = !isStart;
 			}

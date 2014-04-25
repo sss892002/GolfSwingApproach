@@ -21,7 +21,7 @@ public class PlotManager {
 	private SimpleXYSeries magSeries = null; ///Acceleration Magnitude Series
 	private ArrayList<Float> magList = new ArrayList<Float>();
 	
-	private static Integer lineColor = Color.argb(255, 0,255,0);
+	private static Integer lineColor = Color.argb(255, 255,0,0);
 	private static Integer pointColor = Color.argb(200, 250, 250, 250);
 	
 	public PlotManager(XYPlot plot )
