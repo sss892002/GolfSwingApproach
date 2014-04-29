@@ -278,10 +278,15 @@ public class MainActivity extends Activity {
 		{
 			sensorData.add(universalManager.getRotationData(i));
 		}
+		for(int i = 0 ; i < 3; i++)
+		{
+			sensorData.add(universalManager.getLinearAccelData(i));
+		}
 		
 		timeStamps.add(universalManager.getAccelTime());
 		timeStamps.add(universalManager.getGyroTime());
 		timeStamps.add(universalManager.getRotationTime());
+		timeStamps.add(universalManager.getLinearAccelTime());
 		
 		StringBuilder buffer = new StringBuilder();
 		
@@ -300,13 +305,14 @@ public class MainActivity extends Activity {
 		}
 		
 		final ToggleButton positionButton =  (ToggleButton)findViewById(R.id.handButton);
+		
 		if(positionButton.isChecked())
 		{
-			position = "left_wrist";
+			position = "right_wrist";
 		}
 		else
 		{
-			position = "right_wrist";
+			position = "left_wrist";
 		}
 		
 		String device = "SmartPhone";

@@ -35,7 +35,7 @@ public class AsyncUploadFile extends AsyncTask<String, Integer, Long> {
 
 	@Override
 	protected Long doInBackground(String... urls) {
-		String upLoadServerUri = "http://www.zikto.com/gait/upload.php";
+		String upLoadServerUri = "http://www.zikto.com/gait/uploadall.php";
 		int serverResponseCode = 0;
 
 		/**********  File Path *************/

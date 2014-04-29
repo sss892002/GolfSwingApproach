@@ -26,6 +26,9 @@ public class UniversalSensorManager implements SensorEventListener {
 	private Sensor rotationvector;
 	private ArrayList<LinkedList<Float>> rotationList = new ArrayList<LinkedList<Float>>();
 	private LinkedList<Long >rotationTime = new LinkedList<Long>();
+	private Sensor linearAccelrometer;
+	private ArrayList<LinkedList<Float>> linearAccelList = new ArrayList<LinkedList<Float>>();
+	private LinkedList<Long> linearAccelTime = new LinkedList<Long>();
 	private ArrayList<PlotManager> plotList = new ArrayList<PlotManager>();
 	
 	private int drawingPlot=0;
@@ -36,6 +39,7 @@ public class UniversalSensorManager implements SensorEventListener {
 		accelrometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 		rotationvector = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+		linearAccelrometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 		
 		plotList.add(plot1);
 		plotList.add(plot2);
@@ -106,6 +110,19 @@ public class UniversalSensorManager implements SensorEventListener {
 			}
 			rotationTime.add(event.timestamp);
 		}
+		else if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION)
+		{
+			for(int i = 0 ; i < 3; i++)
+			{
+				linearAccelList.get(i).add(event.values[i]);
+//				if( drawingPlot == Sensor.TYPE_ROTATION_VECTOR )
+//				{
+//					if(i < 3)
+//						plotList.get(i).addValue(event.values[i]);
+//				}
+			}
+			linearAccelTime.add(event.timestamp);
+		}
 	}
 	
 	public void draw(int i )
@@ -128,6 +145,11 @@ public class UniversalSensorManager implements SensorEventListener {
 		return rotationList.get(index);
 	}
 	
+	public LinkedList<Float> getLinearAccelData(int index)
+	{
+		return linearAccelList.get(index);
+	}
+	
 	public LinkedList<Long> getAccelTime()
 	{
 		return accelTime;
@@ -140,25 +162,34 @@ public class UniversalSensorManager implements SensorEventListener {
 	{
 		return rotationTime;
 	}
+	public LinkedList<Long> getLinearAccelTime()
+	{
+		return linearAccelTime;
+	}
 	
 	public void start()
 	{
 		sensorManager.registerListener(this, accelrometer, RATE);
 		sensorManager.registerListener(this, gyroscope, RATE);
 		sensorManager.registerListener(this, rotationvector, RATE);
+		sensorManager.registerListener(this, linearAccelrometer, RATE);
 
 		accelList.clear();
 		gyroList.clear();
 		rotationList.clear();
+		linearAccelList.clear();
 		accelTime.clear();
 		gyroTime.clear();
 		rotationTime.clear();
+		linearAccelTime.clear();
+		
 		
 		for(int i = 0  ; i < 3 ; i++) //  
 		{
 			accelList.add(new LinkedList<Float>());
 			gyroList.add(new LinkedList<Float>());
 			rotationList.add(new LinkedList<Float>());
+			linearAccelList.add(new LinkedList<Float>());
 			plotList.get(i).clear();
 		}
 		rotationList.add(new LinkedList<Float>());
