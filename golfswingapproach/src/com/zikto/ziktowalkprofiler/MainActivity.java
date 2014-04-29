@@ -153,7 +153,7 @@ public class MainActivity extends Activity {
 			
 		}
 		universalManager.start();
-		universalManager.draw(Sensor.TYPE_ROTATION_VECTOR);
+		universalManager.draw(Sensor.TYPE_GYROSCOPE);
 	}
 
 	public void stopPhoneSensor()
@@ -252,7 +252,7 @@ public class MainActivity extends Activity {
 		String height = editHeight.getText().toString();
 		String weight = editWeight.getText().toString();
 		
-		if(!ValidateInputs())return;
+		//if(!ValidateInputs())return;
 		
 		if(filename=="")
 		{
