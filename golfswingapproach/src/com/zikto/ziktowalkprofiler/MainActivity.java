@@ -31,8 +31,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -77,6 +80,7 @@ public class MainActivity extends Activity {
 		final Button startbutton = (Button)findViewById(R.id.startbtn);
 //		final Button connectButoon = (Button)findViewById(R.id.connectButton);
 		final Button sendButton = (Button)findViewById(R.id.sendButton);
+		final Button fpglogo = (Button) findViewById(R.id.fpglogo);
 
 		XYPlot plot;
 		XYPlot subPlot1;
@@ -128,6 +132,17 @@ public class MainActivity extends Activity {
 		});
 		
 		sendingManager = new AsyncUploadFile(this);
+		
+		
+		fpglogo.setOnClickListener(new Button.OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v) {
+				closeKeyboard();
+			}
+			
+		});
 	}
 	public void checkBTState()
 	{
@@ -315,7 +330,7 @@ public class MainActivity extends Activity {
 			position = "left_wrist";
 		}
 		
-		String device = "SmartPhone";
+		String device = "galaxy gear";
 		
 		for( LinkedList<Float> list : sensorData)
 		{
@@ -440,6 +455,13 @@ public class MainActivity extends Activity {
 		}
 		
 		return true;
+	}
+	
+	public void closeKeyboard()
+	{
+		Log.d("d","d");
+		getWindow().setSoftInputMode(
+			      WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
 
 	public final BroadcastReceiver mReciever = new BroadcastReceiver() {

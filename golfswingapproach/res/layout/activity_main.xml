@@ -1,229 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/fpg" />
-     <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/poweredby" />
-    </LinearLayout>
-
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Name" >
-
-        <requestFocus />
-    </EditText>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/startbtn"
-            android:layout_width="350dp"
-            android:layout_height="70dp"
-            android:background="@drawable/buttonstart"
-            android:shadowColor="#A8A8A8"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="5"
-            android:text="Start Tracking"
-            android:textColor="#FFFFFF"
-            android:textSize="35sp" 
-            
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
-
-        <ToggleButton
-            android:id="@+id/genderButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="@drawable/togglebuttongender"
-            android:layout_margin="5dp"
-            android:text="Female"
-            android:textColor="#FFFFFF"
-			android:textSize="30sp"
-            android:textOff="Female"
-            android:textOn="Male"
-            android:layout_width="0dp"
-			android:layout_height="50dp"
-			android:shadowColor="#A8A8A8"
-			android:shadowDx="0"
-			android:shadowDy="0"
-			android:shadowRadius="5"
-			android:layout_weight="1"
- 
-            
-             />
-
-        <ToggleButton
-            android:id="@+id/handButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="@drawable/togglebuttonhand"
-            android:layout_margin="5dp"
-            android:text="Left Hand"
-            android:textColor="#FFFFFF"
-			android:textSize="30sp"
-            android:textOff="Left Hand"
-            android:textOn="Right Hand"
-            android:layout_width="0dp"
-			android:layout_height="50dp"
-			android:shadowColor="#A8A8A8"
-			android:shadowDx="0"
-			android:shadowDy="0"
-			android:shadowRadius="5"
-			android:layout_weight="1"
-            
- />
-</LinearLayout>
-
-    <TextView
-        android:id="@+id/out"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#aaaaaa"
-        android:textSize="18sp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
-        
-         <EditText
-            android:id="@+id/editAge"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="4"
-            android:inputType="number"
-            android:hint="Age" />
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/fpglogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fpg" />
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/poweredby" />
+        </LinearLayout>
 
         <EditText
-            android:id="@+id/editWeight"
-            android:layout_width="wrap_content"
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="number"
-            android:hint="Weight in Kg" />
+            android:hint="Name" >
+
+            <requestFocus />
+        </EditText>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/startbtn"
+                android:layout_width="350dp"
+                android:layout_height="70dp"
+                android:background="@drawable/buttonstart"
+                android:shadowColor="#A8A8A8"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                android:text="Start Tracking"
+                android:textColor="#FFFFFF"
+                android:textSize="35sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <ToggleButton
+                android:id="@+id/genderButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/togglebuttongender"
+                android:shadowColor="#A8A8A8"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                android:text="Female"
+                android:textColor="#FFFFFF"
+                android:textOff="Female"
+                android:textOn="Male"
+                android:textSize="30sp" />
+
+            <ToggleButton
+                android:id="@+id/handButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/togglebuttonhand"
+                android:shadowColor="#A8A8A8"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                android:text="Left Hand"
+                android:textColor="#FFFFFF"
+                android:textOff="Left"
+                android:textOn="Right"
+                android:textSize="30sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#aaaaaa"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <EditText
+                android:id="@+id/editAge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="4"
+                android:hint="Age"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/editHeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:hint="Cm"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/editWeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="5"
+                android:hint="Kg"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <com.androidplot.xy.XYPlot
+            android:id="@+id/mainPlot"
+            android:layout_width="fill_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            title="A Simple XYPlot Example"
+            android:visibility="gone" />
+
+        <com.androidplot.xy.XYPlot
+            android:id="@+id/subPlot1"
+            android:layout_width="fill_parent"
+            android:layout_height="100dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            title="A Simple XYPlot Example" />
+
+        <com.androidplot.xy.XYPlot
+            android:id="@+id/subPlot2"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            title="A Simple XYPlot Example"
+            android:visibility="gone" />
 
         <EditText
-            android:id="@+id/editHeight"
-            android:layout_width="wrap_content"
+            android:id="@+id/editPelvic"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="number"
-            android:hint="Height in Cm" />
+            android:hint="Pelvic Rotation" />
+
+        <EditText
+            android:id="@+id/editComments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Comments" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/sendButton"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="200dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/buttonsend"
+                    android:shadowColor="#A8A8A8"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="5"
+                    android:text="SEND"
+                    android:textColor="#FFFFFF"
+                    android:textSize="35sp" />
+
+                <Button
+                    android:id="@+id/resetButton"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="70dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/buttonreset"
+                    android:shadowColor="#A8A8A8"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="5"
+                    android:text="RESET"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
-    <com.androidplot.xy.XYPlot
-        android:id="@+id/mainPlot"
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
-        title="A Simple XYPlot Example"
-        android:visibility="gone" />
-
-    <com.androidplot.xy.XYPlot
-        android:id="@+id/subPlot1"
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
-        title="A Simple XYPlot Example" />
-
-    <com.androidplot.xy.XYPlot
-        android:id="@+id/subPlot2"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
-        title="A Simple XYPlot Example"
-        android:visibility="gone" />
-
-    <EditText
-        android:id="@+id/editPelvic"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Pelvic Rotation" />
-
-    <EditText
-        android:id="@+id/editComments"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Comments" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
-        <Button
-            android:id="@+id/sendButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:text="SEND"
-			android:textColor="#FFFFFF"
-			android:textSize="35sp"
-			android:layout_width="280dp"
-			android:layout_height="50dp"
-			android:shadowColor="#A8A8A8"
-			android:shadowDx="0"
-			android:shadowDy="0"
-			android:shadowRadius="5"
-            android:background="@drawable/buttonsend" />
-    <Button
-            android:id="@+id/resetButton"
-            style="?android:attr/borderlessButtonStyle"
-            android:text="RESET"
-			android:textColor="#FFFFFF"
-			android:textSize="20sp"
-			android:layout_width="70dp"
-			android:layout_height="50dp"
-			android:shadowColor="#A8A8A8"
-			android:shadowDx="0"
-			android:shadowDy="0"
-			android:shadowRadius="5"
-            android:background="@drawable/buttonreset" />
-    
-    </LinearLayout>
-    
-    
-    </LinearLayout>
-    
-</LinearLayout>
+</ScrollView>
