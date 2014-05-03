@@ -33,9 +33,10 @@ public class UniversalSensorManager implements SensorEventListener {
 	
 	private int drawingPlot=0;
 	
-	public UniversalSensorManager(Activity activity, PlotManager plot1, PlotManager plot2 , PlotManager plot3)
+	public UniversalSensorManager(SensorManager sensorManager, PlotManager plot1, PlotManager plot2 , PlotManager plot3)
 	{
-		sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
+//		this.sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
+		this.sensorManager = sensorManager;
 		accelrometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 		rotationvector = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);

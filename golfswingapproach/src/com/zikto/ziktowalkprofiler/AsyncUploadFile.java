@@ -8,23 +8,25 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.zikto.ziktowalkprofiler.fragments.MeasureFragment;
+
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class AsyncUploadFile extends AsyncTask<String, Integer, Long> {
 	
-	final MainActivity activity;
+	final MeasureFragment fragment;
 	
-	public AsyncUploadFile(MainActivity activity)
+	public AsyncUploadFile(MeasureFragment fragment)
 	{
-		this.activity=activity;
+		this.fragment=fragment;
 	}
 	
 	@Override
 	protected void onPostExecute(Long result)
-	{
-		activity.DisplayServerMessage(result);
+	{		
+		fragment.DisplayServerMessage(result);
 	}
 	
 	@Override
