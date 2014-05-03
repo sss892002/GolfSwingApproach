@@ -40,10 +40,7 @@ public class MeasureFragment extends Fragment {
 	
 	private PlotManager plotManager;
 	private PlotManager subplot1Manager;
-	private PlotManager subplot2Manager;
-	
-	private AsyncUploadFile sendingManager;
-	
+	private PlotManager subplot2Manager;	
 	private ViewGroup rootView;
 	private View profileView;
 
@@ -97,9 +94,7 @@ public class MeasureFragment extends Fragment {
 				}
 				isStart = !isStart;
 			}
-		});
-		
-		sendingManager = new AsyncUploadFile(this);		
+		});	
 		
 		return rootView;
 	}
