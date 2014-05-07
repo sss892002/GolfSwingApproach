@@ -111,6 +111,8 @@ public class MeasureFragment extends Fragment {
 		}
 		universalManager.start();
 		universalManager.draw(Sensor.TYPE_GYROSCOPE);
+		
+		rootView.setKeepScreenOn(true);
 	}
 
 	public void stopPhoneSensor()
@@ -120,7 +122,8 @@ public class MeasureFragment extends Fragment {
 		{
 			universalManager.stop();
 		}
-		
+
+		rootView.setKeepScreenOn(false);
 	}
 	
 	public void DisplayServerMessage(Long response)
