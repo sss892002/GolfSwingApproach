@@ -78,18 +78,21 @@ public class MeasureFragment extends Fragment {
 		startbutton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View v) {
-				
+				final Button sendButton = (Button)rootView.findViewById(R.id.sendButton);
+
 
 				if(isStart)
 				{
 					stopPhoneSensor();
 					startbutton.setText("Start Tracking");
+					sendButton.setEnabled(true);
 //					startbutton.setBackgroundResource(R.drawable.buttonstart);
 				}
 				else
 				{
 					startPhoneSensor();
 					startbutton.setText("Stop Tracking");
+					sendButton.setEnabled(false);
 					//startbutton.setBackgroundResource(R.drawable.buttonstop);
 				}
 				isStart = !isStart;
