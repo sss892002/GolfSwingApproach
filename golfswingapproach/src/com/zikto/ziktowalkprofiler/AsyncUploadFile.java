@@ -18,6 +18,11 @@ public class AsyncUploadFile extends AsyncTask<String, Integer, Long> {
 	
 	final MeasureFragment fragment;
 	
+	public AsyncUploadFile()
+	{
+		this.fragment = null;
+	}
+	
 	public AsyncUploadFile(MeasureFragment fragment)
 	{
 		this.fragment=fragment;
@@ -25,7 +30,8 @@ public class AsyncUploadFile extends AsyncTask<String, Integer, Long> {
 	
 	@Override
 	protected void onPostExecute(Long result)
-	{		
+	{	
+		if(fragment!=null)
 		fragment.DisplayServerMessage(result);
 	}
 	

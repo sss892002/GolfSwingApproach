@@ -238,7 +238,7 @@ public class MeasureFragment extends Fragment {
 			buffer.append("\n");
 		}
 		
-		buffer.append(name+";"+gender+";"+device+";"+pelvicRotation+";"+meta+";"+position+";casual walking;"+age+";"+weight+";"+height+"\n");
+		buffer.append(name+";"+gender+";"+device+";"+pelvicRotation+";"+meta+";"+position+";casual walking, fpg;"+age+";"+weight+";"+height+"\n");
 		
 		message = buffer.toString();
 		
@@ -260,7 +260,9 @@ public class MeasureFragment extends Fragment {
 				osw.flush();
 				osw.close();
 				//int response = ServerTools.uploadFile(file.getAbsolutePath());
-				new AsyncUploadFile(this).execute(file.getAbsolutePath());
+				
+				//Commented for Finest Private Gym use
+				//new AsyncUploadFile(this).execute(file.getAbsolutePath());
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
