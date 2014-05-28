@@ -12,6 +12,7 @@ import java.util.LinkedList;
 
 import com.androidplot.xy.XYPlot;
 import com.zikto.ziktowalkprofiler.AsyncUploadFile;
+import com.zikto.ziktowalkprofiler.InvensenseManager;
 import com.zikto.ziktowalkprofiler.MainActivity;
 import com.zikto.ziktowalkprofiler.PlotManager;
 import com.zikto.ziktowalkprofiler.R;
@@ -37,6 +38,7 @@ import android.widget.ToggleButton;
 public class MeasureFragment extends Fragment {
 	private boolean isStart=false;
 	private UniversalSensorManager universalManager;
+	private InvensenseManager invensenseManager;
 	
 	private PlotManager plotManager;
 	private PlotManager subplot1Manager;
@@ -90,7 +92,8 @@ public class MeasureFragment extends Fragment {
 				}
 				else
 				{
-					startPhoneSensor();
+					//startPhoneSensor();
+					startInvenSense();
 					startbutton.setText("Stop Tracking");
 					sendButton.setEnabled(false);
 					//startbutton.setBackgroundResource(R.drawable.buttonstop);
@@ -100,6 +103,17 @@ public class MeasureFragment extends Fragment {
 		});	
 		
 		return rootView;
+	}
+	
+	public void startInvenSense()
+	{
+		if(invensenseManager == null)
+		{
+			invensenseManager = new InvensenseManager(this.getActivity(), subplot1Manager);
+		}
+		
+		invensenseManager.start();
+		
 	}
 	
 	public void startPhoneSensor()

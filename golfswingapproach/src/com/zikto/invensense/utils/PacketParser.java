@@ -15,8 +15,12 @@ public class PacketParser {
 	private boolean isQuaternion = false;
 	private boolean isDebug = false;
 	private boolean isData = false;
+	
+	private boolean isGyro = false;
+	private boolean isAccel = false;
 
 	private ArrayList<Float> AccelList;
+	private ArrayList<Float> GyroList=new ArrayList<Float>();
 	public PacketParser( byte[] data)
 	{
 		this.data = new ArrayList<Byte>();
@@ -57,22 +61,35 @@ public class PacketParser {
 
 	private void ParseData()
 	{
+		float[] d={0,0,0};
+		final int base = 3;
 		if(isData)
 		{
 			// 			Log.d("Parser","Data 2 : "+this.data.get(2));
 			switch(this.data.get(2))
 			{
 			case 0: //Accel
-				float[] d={0,0,0};
-				final int base = 3;
 
 				for (int i = 0 ; i < 3 ; i++)
 				{
 					int index = i*4+base;
 					d[i] = fourbytes(this.data.get(index),this.data.get(index+1),this.data.get(index+2),this.data.get(index+3)) * 1.0f/(1<<16);
 				} 				
-				Log.d("Parser","Data : " + d[0]+ " "+ d[1] + " " +d[2]);
+				Log.d("Parser","Accel Data : " + d[0]+ " "+ d[1] + " " +d[2]);
 				setAccelData(d[0], d[1], d[2]);
+				this.isAccel =true;
+				break;
+				
+			case 1://gyro
+				for (int i = 0 ; i < 3 ; i++)
+				{
+					int index = i*4+base;
+					d[i] = fourbytes(this.data.get(index),this.data.get(index+1),this.data.get(index+2),this.data.get(index+3)) * 1.0f/(1<<16);
+				} 				
+				Log.d("Parser","Gyro Data : " + d[0]+ " "+ d[1] + " " +d[2]);
+				setGyroData(d[0], d[1], d[2]);
+				this.isGyro=true;
+				break;
 			}
 		}
 	}
@@ -123,6 +140,23 @@ public class PacketParser {
 	{
 		return this.isData;
 	}
+	
+	public boolean isAccel()
+	{
+		return this.isAccel;
+	}
+	public boolean isGyro()
+	{
+		return this.isGyro;
+	}
+	
+	private void setGyroData(float d1, float d2, float d3)
+	{
+		GyroList.add(d1);
+		GyroList.add(d2);
+		GyroList.add(d3);
+		
+	}
 
 	private void setAccelData(float d1, float d2, float d3)
 	{
@@ -138,6 +172,16 @@ public class PacketParser {
 		else
 			return null;
 	} 	
+	
+	public float getGyroY()
+	{
+		if(isData &&  isGyro)
+		{
+			return GyroList.get(1);
+		}
+		else
+			return NAN;
+	}
 
 	public float getAccelMag()
 	{
