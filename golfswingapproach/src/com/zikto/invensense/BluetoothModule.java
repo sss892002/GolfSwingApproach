@@ -16,6 +16,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 
 /**
@@ -40,6 +41,7 @@ public class BluetoothModule {
 	private OutputStream outStream = null;
 	private InputStream inStream = null;
 	public static final int REQUEST_ENABLE_BT = 1;
+	private boolean socketConnected = false;
 
 	// Well known SPP UUID
 	private static final UUID MY_UUID =
@@ -89,22 +91,27 @@ public class BluetoothModule {
 		}
 		btAdapter.cancelDiscovery();
 
-		try {
-			btSocket.connect();
-			return true;
-		} catch (IOException e) {
-
-//			out.append("\nConnection Failed!!!Reconnect in 3 seconds");
-			try
-			{
-				btSocket.close();
-			}catch(IOException ioerror)
-			{
-//				out.append(ioerror.getMessage());
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			try{
+				btSocket.connect();
+				return true;
 			}
-
-			return false;//SystemClock.sleep(3000);
+			catch(IOException e)
+			{
+				SystemClock.sleep(1000);
+			}
 		}
+		
+		try
+		{
+			btSocket.close();
+		}catch(IOException ioerror)
+		{
+//			out.append(ioerror.getMessage());
+		}
+		Log.d("BT", "Fail to connect");
+		return false;
 	}
 	
 

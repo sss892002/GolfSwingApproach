@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
+import com.invensense.casdk.client.BluetoothDataReader;
 import com.zikto.invensense.BluetoothModule;
+import com.zikto.invensense.Global;
 import com.zikto.invensense.utils.PacketParser;
 
 import android.app.Activity;
@@ -16,11 +18,14 @@ import android.util.Log;
 
 public class InvensenseManager {
 
-	final int MESSAGE_READ=-9999;
+	static final int MESSAGE_READ=-9999;
 
 	private Activity activity;
 	private PlotManager plotManager;
 	private BluetoothSocket btSocket;
+	private BluetoothDataReader mBluetoothDataReader;
+	/** Bluetooth input stream to read the incoming data from the device */
+	private InputStream mBluetoothIS = null;
 	public InvensenseManager(Activity activity, PlotManager plotManager)
 	{
 		this.activity = activity;
@@ -32,8 +37,30 @@ public class InvensenseManager {
 		if(BluetoothModule.getInstance().AttemptConnect())
 		{
 			btSocket = BluetoothModule.getInstance().getSocket();
-			BluetoothReadThread(btSocket);
+			try
+			{
+				mBluetoothIS = btSocket.getInputStream();
+				mBluetoothDataReader = new BluetoothDataReader();
+				mBluetoothDataReader.execute(mBluetoothIS);
+				//BluetoothReadThread(btSocket);
+				Log.d("InvensenseManager", "Bluetooth Initiated...");
+			}catch(Exception e)
+			{
+				//
+			}
+		
 		}
+	
+		Global.CASDKUtilityActivityHandler = new Handler()
+		{
+			public void handleMessage(Message msg) {
+				switch (msg.arg2) {
+				
+				case BluetoothDataReader.PACKET_DATA_GYRO:
+					plotManager.addValue(Global.Gyro[2]);
+				}
+			}
+		};
 
 	}
 
@@ -63,9 +90,12 @@ public class InvensenseManager {
 				// your code goes here
 				String readMessage = (String) msg.obj;
 				byte[] buffer =readMessage.getBytes();
-
-				for (int i = 0 ; i < (Integer)msg.arg1 - 23 ; i ++ )
+				
+				//for (int i = 0 ; i < (Integer)msg.arg1 - 23 ; i ++ )
+				//{
+				if ( msg.arg1 == 23)
 				{
+					int i = 0;
 					if( buffer[i] == '$' && buffer[i+21]=='\r' && buffer[i+22]=='\n')
 					{
 						byte[] packet = Arrays.copyOfRange(buffer, i, i+23);
@@ -73,7 +103,7 @@ public class InvensenseManager {
 						if(p.isData())
 						{
 							//Log.d("BT2","Data " + p.getAccelData().toString());
-							//Log.d("BT2","Mag "+ p.getAccelMag());
+							Log.d("BT2","Valid Data");
 							float value = p.getGyroY();
 							if(value != PacketParser.NAN)
 								plotManager.addValue(value);
@@ -81,6 +111,9 @@ public class InvensenseManager {
 						i = i + 22;
 					}
 				}
+				
+				
+				//}
 			}
 		}
 	};
@@ -93,8 +126,8 @@ public class InvensenseManager {
 			public void run() {
 				int bytes;
 				//TODO:Fix reading module.Looks like it's missing tons of data
-				byte[] buffer1 = new byte[64];
-				byte[] buffer2 = new byte[64];
+				byte[] buffer1 = new byte[23];
+				byte[] buffer2 = new byte[23];
 				
 				InputStream inStream;
 				boolean doublebuffer = true;
@@ -107,13 +140,13 @@ public class InvensenseManager {
 							if(doublebuffer)
 							{
 								bytes = inStream.read(buffer1);
-								String readMessage = new String(Arrays.copyOf(buffer1, bytes), 0, bytes);
+								String readMessage = new String(buffer1, 0, bytes);
 								mHandler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage).sendToTarget();
 							}
 							else
 							{
 								bytes = inStream.read(buffer2);
-								String readMessage = new String(Arrays.copyOf(buffer2, bytes), 0, bytes);
+								String readMessage = new String(buffer2, 0, bytes);
 								mHandler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage).sendToTarget();
 							}
 							doublebuffer = !doublebuffer;
