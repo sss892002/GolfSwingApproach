@@ -62,16 +62,14 @@ public class InvensenseManager {
 			case MESSAGE_READ:
 				// your code goes here
 				String readMessage = (String) msg.obj;
-				Log.d("Handler",""+msg.arg1);
-				
-				if ((Integer)msg.arg1 == 23 ) {
-					byte[] buffer =readMessage.getBytes();
+				byte[] buffer =readMessage.getBytes();
 
-					//Log.d("BT1",(int)buffer[21]+" "+(int)buffer[22]);
-					//if( buffer[0] == '$' && buffer[21]=='\r' && buffer[22]=='\n')
-					//{
-						Log.d("BT1","valid data");
-						PacketParser p = new PacketParser(buffer);
+				for (int i = 0 ; i < (Integer)msg.arg1 - 23 ; i ++ )
+				{
+					if( buffer[i] == '$' && buffer[i+21]=='\r' && buffer[i+22]=='\n')
+					{
+						byte[] packet = Arrays.copyOfRange(buffer, i, i+23);
+						PacketParser p = new PacketParser(packet);
 						if(p.isData())
 						{
 							//Log.d("BT2","Data " + p.getAccelData().toString());
@@ -80,7 +78,8 @@ public class InvensenseManager {
 							if(value != PacketParser.NAN)
 								plotManager.addValue(value);
 						}
-					//}
+						i = i + 22;
+					}
 				}
 			}
 		}
@@ -94,20 +93,32 @@ public class InvensenseManager {
 			public void run() {
 				int bytes;
 				//TODO:Fix reading module.Looks like it's missing tons of data
-				byte[] buffer = new byte[23];
+				byte[] buffer1 = new byte[64];
+				byte[] buffer2 = new byte[64];
+				
 				InputStream inStream;
+				boolean doublebuffer = true;
 				try {
 					inStream = socket.getInputStream();
 					while(true)
 					{
 						try
 						{
-							//Log.d("ALIVE","Read");
-							bytes = inStream.read(buffer);
-							String readMessage = new String(buffer, 0, buffer.length);
-							mHandler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage)
-							.sendToTarget();
-						}catch(IOException e )
+							if(doublebuffer)
+							{
+								bytes = inStream.read(buffer1);
+								String readMessage = new String(Arrays.copyOf(buffer1, bytes), 0, bytes);
+								mHandler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage).sendToTarget();
+							}
+							else
+							{
+								bytes = inStream.read(buffer2);
+								String readMessage = new String(Arrays.copyOf(buffer2, bytes), 0, bytes);
+								mHandler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage).sendToTarget();
+							}
+							doublebuffer = !doublebuffer;
+						}
+						catch(IOException e )
 						{
 							Log.d("Error",e.getMessage());
 						}
