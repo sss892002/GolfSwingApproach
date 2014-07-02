@@ -5,5 +5,6 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
 	<string name="connect">Connect</string>
-	<string name="Send">SAVE</string>
+	<string name="Send">Connect</string>
+	<string name="make_template">Make Template</string>
 </resources>

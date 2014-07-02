@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/measure_layout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" 
-    android:id="@+id/measure_layout">
+    android:orientation="vertical" >
 
     <LinearLayout
         android:id="@+id/container"
@@ -12,32 +12,26 @@
         android:gravity="center"
         android:orientation="vertical" >
 
+        <Button
+            android:id="@+id/startbtn"
+            android:layout_width="300dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="10sp"
+            android:background="@drawable/buttonstart"
+            android:shadowColor="#A8A8A8"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:text="Start Tracking"
+            android:textColor="#FFFFFF"
+            android:textSize="35sp" />
 
-
-            <Button
-                android:id="@+id/startbtn"
-                android:layout_width="300dp"
-                android:layout_height="70dp"
-                android:background="@drawable/buttonstart"
-                android:shadowColor="#A8A8A8"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="5"
-                android:text="Start Tracking"
-                android:layout_marginTop="10sp"
-                android:textColor="#FFFFFF"
-                android:textSize="35sp" />
-       
-
-      
         <TextView
             android:id="@+id/out"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#aaaaaa"
             android:textSize="18sp" />
-
-        
 
         <com.androidplot.xy.XYPlot
             android:id="@+id/mainPlot"
@@ -67,49 +61,58 @@
             android:layout_marginTop="0dp"
             title="A Simple XYPlot Example"
             android:visibility="gone" />
+        
+        
+        <ImageView
+                android:id="@+id/imageSmiley"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="result"
+                android:src="@drawable/smile1" />
 
-       
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal" >
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/sendButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal" >
+                android:background="@drawable/buttonsendselector"
+                android:shadowColor="#A8A8A8"
+                android:text="@string/Send"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
 
-                <Button
-                    android:id="@+id/sendButton"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:layout_width="300dp"
-                    android:layout_height="70dp"
-                    android:background="@drawable/buttonsendselector"
-                    android:shadowColor="#A8A8A8"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="5"
-                    android:text="@string/Send"
-                    android:textColor="#FFFFFF"
-                    android:textSize="35sp" />
+            <Button
+                android:id="@+id/makeTemplateButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/buttonsendselector"
+                android:shadowColor="#A8A8A8"
+                android:text="@string/make_template"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
 
-                <Button
-                    android:id="@+id/resetButton"
-                    style="?android:attr/borderlessButtonStyle"
-                    android:layout_width="70dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/buttonreset"
-                    android:shadowColor="#A8A8A8"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="5"
-                    android:text="RESET"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
-                    android:visibility="gone" />
-            </LinearLayout>
+            <Button
+                android:id="@+id/resetButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/buttonreset"
+                android:shadowColor="#A8A8A8"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="5"
+                android:text="RESET"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 

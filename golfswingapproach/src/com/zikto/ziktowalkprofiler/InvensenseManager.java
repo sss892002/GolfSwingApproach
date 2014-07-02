@@ -9,6 +9,7 @@ import com.invensense.casdk.client.BluetoothDataReader;
 import com.zikto.invensense.BluetoothModule;
 import com.zikto.invensense.Global;
 import com.zikto.invensense.utils.PacketParser;
+import com.zikto.ziktowalkprofiler.fragments.MeasureFragment;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothSocket;
@@ -20,16 +21,29 @@ public class InvensenseManager {
 
 	static final int MESSAGE_READ=-9999;
 
+	public enum Status{
+		MAKING_TEMPLATE,
+		MATCHING_TEMPLATE,
+		IDLE
+	}
+
+	private Status status;
+
 	private Activity activity;
 	private PlotManager plotManager;
 	private BluetoothSocket btSocket;
 	private BluetoothDataReader mBluetoothDataReader;
 	/** Bluetooth input stream to read the incoming data from the device */
 	private InputStream mBluetoothIS = null;
-	public InvensenseManager(Activity activity, PlotManager plotManager)
+	private OutputStream mBluetoothOS = null;
+	private MeasureFragment measureFragment;
+	public InvensenseManager(Activity activity, PlotManager plotManager, MeasureFragment measureFragment)
 	{
 		this.activity = activity;
 		this.plotManager = plotManager;
+		this.measureFragment = measureFragment;
+
+		status = Status.IDLE;
 	}
 
 	public void start()
@@ -40,6 +54,7 @@ public class InvensenseManager {
 			try
 			{
 				mBluetoothIS = btSocket.getInputStream();
+				mBluetoothOS = btSocket.getOutputStream();
 				mBluetoothDataReader = new BluetoothDataReader();
 				mBluetoothDataReader.execute(mBluetoothIS);
 				//BluetoothReadThread(btSocket);
@@ -48,17 +63,44 @@ public class InvensenseManager {
 			{
 				//
 			}
-		
+
 		}
-	
+
 		Global.CASDKUtilityActivityHandler = new Handler()
 		{
 			public void handleMessage(Message msg) {
-				switch (msg.arg2) {
-				
-				case BluetoothDataReader.PACKET_DATA_GYRO:
-					plotManager.addValue(Global.Gyro[2]);
+
+				switch(msg.arg1)
+				{
+				case 1:
+					switch (msg.arg2) {
+
+					case BluetoothDataReader.PACKET_DATA_GYRO:
+						plotManager.addValue(Global.Gyro[2]);
+						break;
+					}
+					break;
+					//Debug Packet	
+				case 0:
+					if (status == Status.MATCHING_TEMPLATE)
+					{
+						String debug_msg = (String)msg.obj;
+						debug_msg = debug_msg.replaceAll("\\D+","");
+						Log.d("matching score", debug_msg);
+						plotManager.addValue(Float.parseFloat(debug_msg));
+						if(Float.parseFloat(debug_msg) < 350)
+						{
+							measureFragment.changeSmileyFace(true);
+						}
+						else
+						{
+							measureFragment.changeSmileyFace(false);
+						}
+					}
+					break;
+
 				}
+
 			}
 		};
 
@@ -68,6 +110,21 @@ public class InvensenseManager {
 	{
 		//TODO stop the thread , disconnect from Bluetooth
 
+	}
+
+	public void sendCommand(String command) {
+		try {
+			if (btSocket.isConnected()) {
+				byte[] cmd = command.getBytes();
+				for (int ii = 0; ii < cmd.length; ii++) {
+					mBluetoothOS.write(cmd[ii]);
+					long currentTime = System.currentTimeMillis();
+					while(System.currentTimeMillis() - currentTime < 50){ ; }
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Handler mHandler = new Handler()
@@ -90,7 +147,7 @@ public class InvensenseManager {
 				// your code goes here
 				String readMessage = (String) msg.obj;
 				byte[] buffer =readMessage.getBytes();
-				
+
 				//for (int i = 0 ; i < (Integer)msg.arg1 - 23 ; i ++ )
 				//{
 				if ( msg.arg1 == 23)
@@ -111,8 +168,8 @@ public class InvensenseManager {
 						i = i + 22;
 					}
 				}
-				
-				
+
+
 				//}
 			}
 		}
@@ -128,7 +185,7 @@ public class InvensenseManager {
 				//TODO:Fix reading module.Looks like it's missing tons of data
 				byte[] buffer1 = new byte[23];
 				byte[] buffer2 = new byte[23];
-				
+
 				InputStream inStream;
 				boolean doublebuffer = true;
 				try {

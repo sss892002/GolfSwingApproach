@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -55,6 +56,8 @@ public class MeasureFragment extends Fragment {
 		
 		final Button startbutton = (Button)rootView.findViewById(R.id.startbtn);
 		final Button sendButton = (Button)rootView.findViewById(R.id.sendButton);
+		final Button makeTemplateButton = (Button) rootView.findViewById(R.id.makeTemplateButton);
+		
 		XYPlot plot;
 		XYPlot subPlot1;
 		XYPlot subPlot2;
@@ -102,6 +105,16 @@ public class MeasureFragment extends Fragment {
 			}
 		});	
 		
+		makeTemplateButton.setOnClickListener(new Button.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				makeTemplate();
+			}
+			
+		});
+		
+		
 		return rootView;
 	}
 	
@@ -109,7 +122,7 @@ public class MeasureFragment extends Fragment {
 	{
 		if(invensenseManager == null)
 		{
-			invensenseManager = new InvensenseManager(this.getActivity(), subplot1Manager);
+			invensenseManager = new InvensenseManager(this.getActivity(), subplot1Manager,this);
 		}
 		
 		invensenseManager.start();
@@ -148,6 +161,20 @@ public class MeasureFragment extends Fragment {
 		else
 			Toast.makeText(this.getActivity().getApplicationContext(), (String)"Sending to server : FAIL!", 
 					   Toast.LENGTH_LONG).show();
+	}
+	
+	public void changeSmileyFace(boolean isMe)
+	{
+		ImageView image = (ImageView) rootView.findViewById(R.id.imageSmiley);
+		
+		if(isMe)
+		{
+			image.setImageResource(R.drawable.smile1);
+		}
+		else
+		{
+			image.setImageResource(R.drawable.smile2);
+		}
 	}
 	
 	@SuppressLint("SimpleDateFormat")
@@ -289,5 +316,14 @@ public class MeasureFragment extends Fragment {
 
 		}
 
+	}
+	
+	void makeTemplate()
+	{
+		invensenseManager.sendCommand("invt");
+		invensenseManager.sendCommand("invt");
+		invensenseManager.sendCommand("invt");
+		
+		
 	}
 }
