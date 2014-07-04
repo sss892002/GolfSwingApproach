@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import com.androidplot.xy.XYPlot;
 import com.zikto.ziktowalkprofiler.AsyncUploadFile;
 import com.zikto.ziktowalkprofiler.InvensenseManager;
+import com.zikto.ziktowalkprofiler.InvensenseManager.Status;
 import com.zikto.ziktowalkprofiler.MainActivity;
 import com.zikto.ziktowalkprofiler.PlotManager;
 import com.zikto.ziktowalkprofiler.R;
@@ -177,6 +178,13 @@ public class MeasureFragment extends Fragment {
 		}
 	}
 	
+	public void setPedometerCount(int steps)
+	{
+		TextView view = (TextView) rootView.findViewById(R.id.pedoText);
+		
+		view.setText(steps+ " steps");
+	}
+	
 	@SuppressLint("SimpleDateFormat")
 	public void sendData()
 	{
@@ -321,9 +329,7 @@ public class MeasureFragment extends Fragment {
 	void makeTemplate()
 	{
 		invensenseManager.sendCommand("invt");
-		invensenseManager.sendCommand("invt");
-		invensenseManager.sendCommand("invt");
 		
-		
+		invensenseManager.setStatus(Status.MAKING_TEMPLATE);
 	}
 }

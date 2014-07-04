@@ -82,21 +82,50 @@ public class InvensenseManager {
 					break;
 					//Debug Packet	
 				case 0:
-					if (status == Status.MATCHING_TEMPLATE)
+					if (status == Status.IDLE)
 					{
 						String debug_msg = (String)msg.obj;
-						debug_msg = debug_msg.replaceAll("\\D+","");
-						Log.d("matching score", debug_msg);
-						plotManager.addValue(Float.parseFloat(debug_msg));
-						if(Float.parseFloat(debug_msg) < 350)
+						//Matching Score
+						switch(debug_msg.charAt(1))
 						{
-							measureFragment.changeSmileyFace(true);
-						}
-						else
-						{
-							measureFragment.changeSmileyFace(false);
+						case 'M':
+							debug_msg = debug_msg.replaceAll("\\D+","");
+							Log.d("matching score", debug_msg);
+							try
+							{
+								plotManager.addValue(Float.parseFloat(debug_msg));
+								if(Float.parseFloat(debug_msg) < 350)
+								{
+									measureFragment.changeSmileyFace(true);
+								}
+								else
+								{
+									measureFragment.changeSmileyFace(false);
+								}
+							}
+							catch(NumberFormatException e)
+							{
+								Log.d("matching score", "Can't parse T.T");
+							}
+							break;
+							
+							//Pedometer Info
+						case 'P':
+							debug_msg = debug_msg.replaceAll("\\D+","");
+							measureFragment.setPedometerCount(Integer.parseInt(debug_msg));
+							Log.d("Pedometer", debug_msg);
+							break;
 						}
 					}
+					
+					else if (status == Status.MAKING_TEMPLATE)
+					{
+						String debug_msg = (String)msg.obj;
+						Log.d("making template", debug_msg);
+						if(debug_msg.contains("DONE"))
+							status = Status.IDLE;
+					}
+					
 					break;
 
 				}
@@ -104,6 +133,11 @@ public class InvensenseManager {
 			}
 		};
 
+	}
+	
+	public void setStatus(Status now)
+	{
+		status = now;
 	}
 
 	public void stop()
