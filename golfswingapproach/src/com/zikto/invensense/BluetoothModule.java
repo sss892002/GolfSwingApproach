@@ -82,6 +82,7 @@ public class BluetoothModule {
 
 	public boolean AttemptConnect()
 	{
+		
 		BluetoothDevice device = btAdapter.getRemoteDevice(address);
 
 		try {
@@ -99,7 +100,7 @@ public class BluetoothModule {
 			}
 			catch(IOException e)
 			{
-				SystemClock.sleep(1000);
+				SystemClock.sleep(500);
 			}
 		}
 		

@@ -13,25 +13,25 @@ import android.util.Log;
 
 public class UniversalSensorManager implements SensorEventListener {
 	
-	static private int RATE = SensorManager.SENSOR_DELAY_FASTEST;
+	static protected int RATE = SensorManager.SENSOR_DELAY_FASTEST;
 	
-	private SensorManager sensorManager;
+	protected SensorManager sensorManager;
 	
-	private Sensor accelrometer;
-	private ArrayList<LinkedList<Float>> accelList = new ArrayList<LinkedList<Float>>();
-	private LinkedList<Long >accelTime = new LinkedList<Long>(); 
-	private Sensor gyroscope;
-	private ArrayList<LinkedList<Float>> gyroList = new ArrayList<LinkedList<Float>>();
-	private LinkedList<Long > gyroTime = new LinkedList<Long>();
-	private Sensor rotationvector;
-	private ArrayList<LinkedList<Float>> rotationList = new ArrayList<LinkedList<Float>>();
-	private LinkedList<Long >rotationTime = new LinkedList<Long>();
-	private Sensor linearAccelrometer;
-	private ArrayList<LinkedList<Float>> linearAccelList = new ArrayList<LinkedList<Float>>();
-	private LinkedList<Long> linearAccelTime = new LinkedList<Long>();
-	private ArrayList<PlotManager> plotList = new ArrayList<PlotManager>();
+	protected Sensor accelrometer;
+	protected ArrayList<LinkedList<Float>> accelList = new ArrayList<LinkedList<Float>>();
+	protected LinkedList<Long >accelTime = new LinkedList<Long>(); 
+	protected Sensor gyroscope;
+	protected ArrayList<LinkedList<Float>> gyroList = new ArrayList<LinkedList<Float>>();
+	protected LinkedList<Long > gyroTime = new LinkedList<Long>();
+	protected Sensor rotationvector;
+	protected ArrayList<LinkedList<Float>> rotationList = new ArrayList<LinkedList<Float>>();
+	protected LinkedList<Long >rotationTime = new LinkedList<Long>();
+	protected Sensor linearAccelrometer;
+	protected ArrayList<LinkedList<Float>> linearAccelList = new ArrayList<LinkedList<Float>>();
+	protected LinkedList<Long> linearAccelTime = new LinkedList<Long>();
+	protected ArrayList<PlotManager> plotList = new ArrayList<PlotManager>();
 	
-	private int drawingPlot=0;
+	protected int drawingPlot=0;
 	
 	public UniversalSensorManager(SensorManager sensorManager, PlotManager plot1, PlotManager plot2 , PlotManager plot3)
 	{

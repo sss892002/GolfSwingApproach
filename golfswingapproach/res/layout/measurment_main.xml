@@ -22,7 +22,7 @@
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="5"
-            android:text="Start Tracking"
+            android:text="Connect Arki Band"
             android:textColor="#FFFFFF"
             android:textSize="35sp" />
 
@@ -74,7 +74,8 @@
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:contentDescription="result"
-                android:src="@drawable/smile1" />
+                android:src="@drawable/smile1" 
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/pedoText"
@@ -91,28 +92,6 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/sendButton"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/buttonsendselector"
-                android:shadowColor="#A8A8A8"
-                android:text="@string/Send"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/makeTemplateButton"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/buttonsendselector"
-                android:shadowColor="#A8A8A8"
-                android:text="@string/make_template"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp" />
-
-            <Button
                 android:id="@+id/resetButton"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="70dp"
@@ -126,6 +105,39 @@
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:visibility="gone" />
+             
+             <Button
+                android:id="@+id/startMeasure"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/buttonsendselector"
+                android:shadowColor="#A8A8A8"
+                android:text="Start Measure"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/Download"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/buttonsendselector"
+                android:shadowColor="#A8A8A8"
+                android:text="@string/make_template"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/sendButton"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/buttonsendselector"
+                android:shadowColor="#A8A8A8"
+                android:text="@string/Send"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
         </LinearLayout>
     </LinearLayout>
 

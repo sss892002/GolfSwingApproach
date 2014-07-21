@@ -20,12 +20,15 @@ import com.zikto.ziktowalkprofiler.R;
 import com.zikto.ziktowalkprofiler.UniversalSensorManager;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,14 +42,19 @@ import android.widget.ToggleButton;
 
 public class MeasureFragment extends Fragment {
 	private boolean isStart=false;
+	private boolean isConnected=false;
 	private UniversalSensorManager universalManager;
 	private InvensenseManager invensenseManager;
-	
+
 	private PlotManager plotManager;
 	private PlotManager subplot1Manager;
 	private PlotManager subplot2Manager;	
 	private ViewGroup rootView;
 	private View profileView;
+	
+	private Button startbutton;
+	private Button sendButton;
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance)
@@ -54,11 +62,12 @@ public class MeasureFragment extends Fragment {
 		MainActivity mainActivity = (MainActivity)this.getActivity();
 		profileView = mainActivity.getMainFragment().getView();
 		rootView = (ViewGroup) inflater.inflate(R.layout.measurment_main, container, false);
-		
-		final Button startbutton = (Button)rootView.findViewById(R.id.startbtn);
-		final Button sendButton = (Button)rootView.findViewById(R.id.sendButton);
-		final Button makeTemplateButton = (Button) rootView.findViewById(R.id.makeTemplateButton);
-		
+
+		startbutton = (Button)rootView.findViewById(R.id.startbtn);
+		sendButton = (Button)rootView.findViewById(R.id.sendButton);
+		final Button downloadButton = (Button) rootView.findViewById(R.id.Download);
+		final Button startMeasureButton = (Button) rootView.findViewById(R.id.startMeasure);
+
 		XYPlot plot;
 		XYPlot subPlot1;
 		XYPlot subPlot2;
@@ -66,21 +75,21 @@ public class MeasureFragment extends Fragment {
 		plot = (XYPlot) rootView.findViewById(R.id.mainPlot);
 		subPlot1 = (XYPlot) rootView.findViewById(R.id.subPlot1);
 		subPlot2 = (XYPlot) rootView.findViewById(R.id.subPlot2);
-		
+
 		plotManager = new PlotManager(plot);
 		subplot1Manager = new PlotManager(subPlot1);
 		subplot2Manager = new PlotManager(subPlot2);
-//
-//		//DEBUG
+		//
+		//		//DEBUG
 		sendButton.setOnClickListener(new Button.OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
 				sendData();
 			}
-			
+
 		});
-//
+		//
 		startbutton.setOnClickListener(new Button.OnClickListener() {
 
 			public void onClick(View v) {
@@ -89,47 +98,109 @@ public class MeasureFragment extends Fragment {
 
 				if(isStart)
 				{
-					stopPhoneSensor();
+					//stopPhoneSensor();
 					startbutton.setText("Start Tracking");
 					sendButton.setEnabled(true);
-//					startbutton.setBackgroundResource(R.drawable.buttonstart);
+
+					isStart = false;
+					//					startbutton.setBackgroundResource(R.drawable.buttonstart);
 				}
 				else
 				{
 					//startPhoneSensor();
+					
 					startInvenSense();
-					startbutton.setText("Stop Tracking");
-					sendButton.setEnabled(false);
+					sendButton.setEnabled(true);
 					//startbutton.setBackgroundResource(R.drawable.buttonstop);
 				}
-				isStart = !isStart;
 			}
 		});	
-		
-		makeTemplateButton.setOnClickListener(new Button.OnClickListener(){
+
+		downloadButton.setOnClickListener(new Button.OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
-				makeTemplate();
+				startDownload();
 			}
-			
+
 		});
 		
-		
+		startMeasureButton.setOnClickListener(new Button.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				invensenseManager.sendCommand("invr");
+			}
+
+		});
 		return rootView;
 	}
-	
-	public void startInvenSense()
+
+	public boolean startInvenSense()
 	{
 		if(invensenseManager == null)
 		{
 			invensenseManager = new InvensenseManager(this.getActivity(), subplot1Manager,this);
 		}
+
+		final ProgressDialog ringProgressDialog = ProgressDialog.show(this.getActivity(), "Please wait...", "Connecting the Arki Band...",true);
+		ringProgressDialog.setCancelable(true);
 		
-		invensenseManager.start();
+		/*
+		this.getActivity().runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				try{
+					isConnected=invensenseManager.start();
+				}
+				catch (Exception e)
+				{
+					Log.e("ee", e.toString());
+				}
+
+				if(isConnected)
+				{
+					startbutton.setText("Disconect");
+					sendButton.setEnabled(true);
+
+					isStart = true;
+				}
+			}
+		});
+		*/
+		isConnected = false;
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				try{
+					isConnected=invensenseManager.start();
+				}
+				catch (Exception e)
+				{
+					Log.e("ee", e.toString());
+				}
+
+
+				ringProgressDialog.dismiss();
+			}
+		}).start();
+		if(isConnected)
+		{
+			//startbutton.setText("Disconect");
+			
+
+			isStart = true;
+		}
+		return true;
+		
 		
 	}
-	
+
 	public void startPhoneSensor()
 	{
 
@@ -139,7 +210,7 @@ public class MeasureFragment extends Fragment {
 		}
 		universalManager.start();
 		universalManager.draw(Sensor.TYPE_GYROSCOPE);
-		
+
 		rootView.setKeepScreenOn(true);
 	}
 
@@ -153,21 +224,21 @@ public class MeasureFragment extends Fragment {
 
 		rootView.setKeepScreenOn(false);
 	}
-	
+
 	public void DisplayServerMessage(Long response)
 	{
 		if(response == 200)
 			Toast.makeText(this.getActivity().getApplicationContext(), (String)"Sending to server : SUCCESS!", 
-					   Toast.LENGTH_LONG).show();
+					Toast.LENGTH_LONG).show();
 		else
 			Toast.makeText(this.getActivity().getApplicationContext(), (String)"Sending to server : FAIL!", 
-					   Toast.LENGTH_LONG).show();
+					Toast.LENGTH_LONG).show();
 	}
-	
+
 	public void changeSmileyFace(boolean isMe)
 	{
 		ImageView image = (ImageView) rootView.findViewById(R.id.imageSmiley);
-		
+
 		if(isMe)
 		{
 			image.setImageResource(R.drawable.smile1);
@@ -177,14 +248,14 @@ public class MeasureFragment extends Fragment {
 			image.setImageResource(R.drawable.smile2);
 		}
 	}
-	
+
 	public void setPedometerCount(int steps)
 	{
 		TextView view = (TextView) rootView.findViewById(R.id.pedoText);
-		
+
 		view.setText(steps+ " steps");
 	}
-	
+
 	@SuppressLint("SimpleDateFormat")
 	public void sendData()
 	{
@@ -196,54 +267,55 @@ public class MeasureFragment extends Fragment {
 		final EditText editWeight  = (EditText)profileView.findViewById(R.id.editWeight);
 		final EditText editHeight  = (EditText)profileView.findViewById(R.id.editHeight);
 		final EditText edit=(EditText)profileView.findViewById(R.id.editText1);
-		
+
 		String filename = edit.getText().toString(); 
 		String pelvicRotation = editPelvic.getText().toString();
 		String meta = editComment.getText().toString();
 		String age = editAge.getText().toString();
 		String height = editHeight.getText().toString();
 		String weight = editWeight.getText().toString();
-		
+
 		//if(!ValidateInputs())return;
-		
+
 		if(filename=="")
 		{
 			filename="default";
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		String currentDateandTime = sdf.format(new Date());
-		
+
 		filename = filename+currentDateandTime+".csv";
 		String message = "";
-		
+
 		ArrayList<LinkedList<Float>> sensorData = new ArrayList<LinkedList<Float>>();
 		ArrayList<LinkedList<Long>> timeStamps = new ArrayList<LinkedList<Long>>();
+
 		for(int i = 0 ; i < 3 ; i ++)
 		{
-			sensorData.add(universalManager.getAccelData(i));
+			sensorData.add(new LinkedList<Float>());
 		}
 		for(int i = 0 ; i < 3 ; i ++)
 		{
-			sensorData.add(universalManager.getGyroData(i));
+			sensorData.add(invensenseManager.getGyroData(i));
 		}
 		for(int i = 0 ; i < 4 ; i ++)
 		{
-			sensorData.add(universalManager.getRotationData(i));
+			sensorData.add(new LinkedList<Float>());
 		}
 		for(int i = 0 ; i < 3; i++)
 		{
-			sensorData.add(universalManager.getLinearAccelData(i));
+			sensorData.add(invensenseManager.getLinearAccelData(i));
 		}
-		
-		timeStamps.add(universalManager.getAccelTime());
-		timeStamps.add(universalManager.getGyroTime());
-		timeStamps.add(universalManager.getRotationTime());
-		timeStamps.add(universalManager.getLinearAccelTime());
-		
+
+		timeStamps.add(new LinkedList<Long>());
+		timeStamps.add(new LinkedList<Long>());
+		timeStamps.add(new LinkedList<Long>());
+		timeStamps.add(new LinkedList<Long>());
+
 		StringBuilder buffer = new StringBuilder();
-		
+
 		//String Nickname, Gender, Device, Rotation, Meta, Position,Status,Age,weight,height
-		
+
 		String name = edit.getText().toString();
 		String gender,position;
 		final ToggleButton genderButton =  (ToggleButton)profileView.findViewById(R.id.genderButton);
@@ -255,9 +327,9 @@ public class MeasureFragment extends Fragment {
 		{
 			gender = "F";
 		}
-		
+
 		final ToggleButton positionButton =  (ToggleButton)profileView.findViewById(R.id.handButton);
-		
+
 		if(positionButton.isChecked())
 		{
 			position = "right_wrist";
@@ -266,9 +338,9 @@ public class MeasureFragment extends Fragment {
 		{
 			position = "left_wrist";
 		}
-		
-		String device = "galaxy gear";
-		
+
+		String device = "MkI";
+
 		for( LinkedList<Float> list : sensorData)
 		{
 			for( Float value : list)
@@ -277,7 +349,7 @@ public class MeasureFragment extends Fragment {
 			}
 			buffer.append("\n");
 		}
-		
+
 		for( LinkedList<Long> list : timeStamps)
 		{
 			for( Long value : list)
@@ -286,11 +358,11 @@ public class MeasureFragment extends Fragment {
 			}
 			buffer.append("\n");
 		}
-		
+
 		buffer.append(name+";"+gender+";"+device+";"+pelvicRotation+";"+meta+";"+position+";casual walking, fpg;"+age+";"+weight+";"+height+"\n");
-		
+
 		message = buffer.toString();
-		
+
 		String state = Environment.getExternalStorageState();
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 
@@ -309,9 +381,10 @@ public class MeasureFragment extends Fragment {
 				osw.flush();
 				osw.close();
 				//int response = ServerTools.uploadFile(file.getAbsolutePath());
-				
+
 				//Commented for Finest Private Gym use
 				//new AsyncUploadFile(this).execute(file.getAbsolutePath());
+				new AsyncUploadFile(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, file.getAbsolutePath());
 
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -325,11 +398,27 @@ public class MeasureFragment extends Fragment {
 		}
 
 	}
-	
+
 	void makeTemplate()
 	{
-		invensenseManager.sendCommand("invt");
-		
-		invensenseManager.setStatus(Status.MAKING_TEMPLATE);
+
+	}
+
+	public void startDownload()
+	{
+		for(int i = 0 ; i < 3 ; i ++)
+		{
+			invensenseManager.sendCommand("invm");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if(invensenseManager.isACK())
+			{
+				changeSmileyFace(true);
+				break;
+			}
+		}
 	}
 }

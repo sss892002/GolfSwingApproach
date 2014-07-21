@@ -3,7 +3,9 @@ package com.zikto.ziktowalkprofiler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import com.invensense.casdk.client.BluetoothDataReader;
 import com.zikto.invensense.BluetoothModule;
@@ -22,12 +24,13 @@ public class InvensenseManager {
 	static final int MESSAGE_READ=-9999;
 
 	public enum Status{
-		MAKING_TEMPLATE,
-		MATCHING_TEMPLATE,
+		DOWNLOADING,
 		IDLE
 	}
 
 	private Status status;
+
+	private Boolean ACK = false;
 
 	private Activity activity;
 	private PlotManager plotManager;
@@ -37,6 +40,10 @@ public class InvensenseManager {
 	private InputStream mBluetoothIS = null;
 	private OutputStream mBluetoothOS = null;
 	private MeasureFragment measureFragment;
+
+	private ArrayList<LinkedList<Float>> accelList = new ArrayList<LinkedList<Float>>();
+	private ArrayList<LinkedList<Float>> gyroList = new ArrayList<LinkedList<Float>>();
+
 	public InvensenseManager(Activity activity, PlotManager plotManager, MeasureFragment measureFragment)
 	{
 		this.activity = activity;
@@ -44,9 +51,71 @@ public class InvensenseManager {
 		this.measureFragment = measureFragment;
 
 		status = Status.IDLE;
+		
+		Global.CASDKUtilityActivityHandler = new Handler()
+		{
+			public void handleMessage(Message msg) {
+
+				switch(msg.arg1)
+				{
+				case 1:
+					switch (msg.arg2) {
+
+					case BluetoothDataReader.PACKET_DATA_GYRO:
+						break;
+					}
+					break;
+					//Debug Packet	
+				case 0:
+					String debug_msg = (String)msg.obj;
+					//Matching Score
+					if (debug_msg.equals("ACK"))
+					{
+						ACK = true;
+					}
+					
+					if(debug_msg.equals("DONE"))
+					{
+						//
+					}
+
+					switch(debug_msg.charAt(1))
+					{
+
+					case 'A':
+						//State Machine
+						if(status == Status.IDLE)
+						{
+							InitSensorDataList();
+						}
+						status = Status.DOWNLOADING;
+
+						if(status ==  Status.DOWNLOADING)
+						{
+							AddAccelData(debug_msg);
+						}
+
+						break;
+
+					case 'G':
+						if(status ==  Status.DOWNLOADING)
+						{
+							AddGyroData(debug_msg);
+						}
+						break;
+
+
+					}
+
+					break;
+
+				}
+
+			}
+		};
 	}
 
-	public void start()
+	public boolean start()
 	{
 		if(BluetoothModule.getInstance().AttemptConnect())
 		{
@@ -61,80 +130,15 @@ public class InvensenseManager {
 				Log.d("InvensenseManager", "Bluetooth Initiated...");
 			}catch(Exception e)
 			{
-				//
+				return false;
 			}
 
 		}
 
-		Global.CASDKUtilityActivityHandler = new Handler()
-		{
-			public void handleMessage(Message msg) {
-
-				switch(msg.arg1)
-				{
-				case 1:
-					switch (msg.arg2) {
-
-					case BluetoothDataReader.PACKET_DATA_GYRO:
-						plotManager.addValue(Global.Gyro[2]);
-						break;
-					}
-					break;
-					//Debug Packet	
-				case 0:
-					if (status == Status.IDLE)
-					{
-						String debug_msg = (String)msg.obj;
-						//Matching Score
-						switch(debug_msg.charAt(1))
-						{
-						case 'M':
-							debug_msg = debug_msg.replaceAll("\\D+","");
-							Log.d("matching score", debug_msg);
-							try
-							{
-								plotManager.addValue(Float.parseFloat(debug_msg));
-								if(Float.parseFloat(debug_msg) < 350)
-								{
-									measureFragment.changeSmileyFace(true);
-								}
-								else
-								{
-									measureFragment.changeSmileyFace(false);
-								}
-							}
-							catch(NumberFormatException e)
-							{
-								Log.d("matching score", "Can't parse T.T");
-							}
-							break;
-							
-							//Pedometer Info
-						case 'P':
-							debug_msg = debug_msg.replaceAll("\\D+","");
-							measureFragment.setPedometerCount(Integer.parseInt(debug_msg));
-							Log.d("Pedometer", debug_msg);
-							break;
-						}
-					}
-					
-					else if (status == Status.MAKING_TEMPLATE)
-					{
-						String debug_msg = (String)msg.obj;
-						Log.d("making template", debug_msg);
-						if(debug_msg.contains("DONE"))
-							status = Status.IDLE;
-					}
-					
-					break;
-
-				}
-
-			}
-		};
+		return true;
 
 	}
-	
+
 	public void setStatus(Status now)
 	{
 		status = now;
@@ -143,7 +147,11 @@ public class InvensenseManager {
 	public void stop()
 	{
 		//TODO stop the thread , disconnect from Bluetooth
-
+		try {
+			btSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void sendCommand(String command) {
@@ -153,7 +161,7 @@ public class InvensenseManager {
 				for (int ii = 0; ii < cmd.length; ii++) {
 					mBluetoothOS.write(cmd[ii]);
 					long currentTime = System.currentTimeMillis();
-					while(System.currentTimeMillis() - currentTime < 50){ ; }
+					while(System.currentTimeMillis() - currentTime < 100){ ; }
 				}
 			}
 		} catch (IOException e) {
@@ -209,51 +217,83 @@ public class InvensenseManager {
 		}
 	};
 
-	private void BluetoothReadThread(BluetoothSocket btSocket)
+	private void InitSensorDataList()
 	{
-		final BluetoothSocket socket = btSocket;
-		Runnable runnable = new Runnable(){
-			@Override
-			public void run() {
-				int bytes;
-				//TODO:Fix reading module.Looks like it's missing tons of data
-				byte[] buffer1 = new byte[23];
-				byte[] buffer2 = new byte[23];
+		accelList.clear();
+		gyroList.clear();
 
-				InputStream inStream;
-				boolean doublebuffer = true;
-				try {
-					inStream = socket.getInputStream();
-					while(true)
-					{
-						try
-						{
-							if(doublebuffer)
-							{
-								bytes = inStream.read(buffer1);
-								String readMessage = new String(buffer1, 0, bytes);
-								mHandler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage).sendToTarget();
-							}
-							else
-							{
-								bytes = inStream.read(buffer2);
-								String readMessage = new String(buffer2, 0, bytes);
-								mHandler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage).sendToTarget();
-							}
-							doublebuffer = !doublebuffer;
-						}
-						catch(IOException e )
-						{
-							Log.d("Error",e.getMessage());
-						}
-					} 
-				} catch (IOException e1) {
-					e1.printStackTrace();
+		for(int i = 0  ; i < 3 ; i++) //  
+		{
+			accelList.add(new LinkedList<Float>());
+			gyroList.add(new LinkedList<Float>());
+		}
+	}
+
+	private void AddGyroData(String msg)
+	{
+		String[] splitMessage = msg.split(",");
+		String value;
+		float data;
+		int index;
+		if(splitMessage.length == 2)
+		{
+			value = ""+splitMessage[0].charAt(2);
+
+			try{
+				data = Float.parseFloat(splitMessage[1]);
+				index = Integer.parseInt(value);
+				if(index == 2 )
+				{
+					plotManager.addValue(data);
 				}
+				Log.d("Gyro" , ""+data);
+
+				gyroList.get(index).add(data);			
+			} catch(NumberFormatException e)
+			{
+
 			}
+		}
 
-		};
+	}
 
-		new Thread(runnable).start();
+	private void AddAccelData(String msg)
+	{
+		String[] splitMessage = msg.split(",");
+		String value;
+		float data;
+		int index;
+		if(splitMessage.length == 2)
+		{
+			value = ""+splitMessage[0].charAt(2);
+
+			try{
+				data = Float.parseFloat(splitMessage[1]);
+				index = Integer.parseInt(value);
+				
+
+				accelList.get(index).add(data);		
+
+				Log.d("Accel" , ""+data);
+			} catch(NumberFormatException e)
+			{
+
+			}
+		}
+	}
+
+	public Boolean isACK()
+	{
+		return ACK;
+	}
+
+	//LinearAccel
+	public LinkedList<Float> getLinearAccelData(int index)
+	{
+		return accelList.get(index);
+	}
+	public LinkedList<Float> getGyroData(int index)
+	{
+		return gyroList.get(index);
 	}
 }
