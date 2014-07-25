@@ -27,6 +27,7 @@ import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,7 +56,8 @@ public class MeasureFragment extends Fragment {
 	private Button startbutton;
 	private Button sendButton;
 	
-
+	private ProgressDialog ringProgressDialog; 
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance)
 	{
@@ -133,6 +135,7 @@ public class MeasureFragment extends Fragment {
 			}
 
 		});
+		
 		return rootView;
 	}
 
@@ -142,10 +145,10 @@ public class MeasureFragment extends Fragment {
 		{
 			invensenseManager = new InvensenseManager(this.getActivity(), subplot1Manager,this);
 		}
-
-		final ProgressDialog ringProgressDialog = ProgressDialog.show(this.getActivity(), "Please wait...", "Connecting the Arki Band...",true);
-		ringProgressDialog.setCancelable(true);
-		
+//
+//		final ProgressDialog ringProgressDialog = ProgressDialog.show(this.getActivity(), "Please wait...", "Connecting the Arki Band...",true);
+//		ringProgressDialog.setCancelable(true);
+	
 		/*
 		this.getActivity().runOnUiThread(new Runnable() {
 			
@@ -170,7 +173,13 @@ public class MeasureFragment extends Fragment {
 			}
 		});
 		*/
+		/*
 		isConnected = false;
+		
+
+		final Handler handler = new Handler();
+		
+		
 		
 		new Thread(new Runnable() {
 			
@@ -185,20 +194,55 @@ public class MeasureFragment extends Fragment {
 					Log.e("ee", e.toString());
 				}
 
-
-				ringProgressDialog.dismiss();
+				ringProgressDialog.setMessage("Connected");
+				
+				handler.postDelayed( new Runnable()
+				{
+					@Override
+					public void run() {
+						ringProgressDialog.dismiss();		
+					}
+				},1000);
 			}
 		}).start();
+		
 		if(isConnected)
 		{
-			//startbutton.setText("Disconect");
-			
 
 			isStart = true;
 		}
+		
+		*/
+		ringProgressDialog = ProgressDialog.show(this.getActivity(), "Please wait...", "Connecting the Arki Band...",true);	
+	
+		this.getActivity().runOnUiThread(new Runnable()
+		{
+
+			@Override
+			public void run() {
+				try{
+					isConnected=invensenseManager.start();
+				}
+				catch (Exception e)
+				{
+					Log.e("ee", e.toString());
+				}
+
+				ringProgressDialog.setMessage("Connected");
+				
+				Handler handler = new Handler();
+				handler.postDelayed( new Runnable()
+				{
+					@Override
+					public void run() {
+						ringProgressDialog.dismiss();		
+					}
+				},1000);
+			}
+			
+		});
+		
 		return true;
-		
-		
 	}
 
 	public void startPhoneSensor()
@@ -421,4 +465,5 @@ public class MeasureFragment extends Fragment {
 			}
 		}
 	}
+	
 }
